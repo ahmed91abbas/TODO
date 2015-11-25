@@ -1,2 +1,12 @@
 Stories:
 
+new button opens a dialog pop up where you can write a note.
+edit button let's you edit the text in the selected note.
+the window shows 10 notes at once the rest scroll bar.
+the program has drop meny that includes "delete""delete all""save" "open""change text size".
+the program allows saving the notes to a text file
+the program allows loading a text file that is saved as 1 note in 1 line.
+everyother note background is colored white and the otheres gray
+when opening the program the last edited text file will open directly.
+when opening a new text a popup message asks if you wanna save the existing file the this file closes before opening the new one
+t
