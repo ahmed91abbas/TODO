@@ -6,12 +6,14 @@ import java.awt.event.ActionListener;
 import javax.swing.JMenuItem;
 
 public class DeleteMenuItem extends JMenuItem implements ActionListener{
-public DeleteMenuItem(){
+	private ToDo todo;
+public DeleteMenuItem(ToDo todo){
 	super("Delete");
+	this.todo = todo;
 }
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		todo.remove();
 		
 	}
 
