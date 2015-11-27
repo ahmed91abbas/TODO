@@ -24,13 +24,14 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
-public class ToDo {
+public class ToDo{
 	private JFrame frame;
 	private JTable table;
 	private DefaultTableModel model;
+	private String fileName = "To do";
 
 	public ToDo() {
-		frame = new JFrame("To do");
+		frame = new JFrame(fileName);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -47,15 +48,17 @@ public class ToDo {
 		frame.setJMenuBar(menu);
 		JMenu file = new JMenu("File");
 		JMenu edit = new JMenu("Edit");
+		JMenu lastMod = new JMenu("Last modified");
 		menu.add(file);
 		menu.add(edit);
+		menu.add(lastMod); //TODO implement
 		file.add(new OpenMenuItem());
-		file.add(new SaveMenuItem());
+		file.add(new SaveAsMenuItem());
 		file.add(new NewMenuItem());
 		edit.add(new DeleteMenuItem(this));
 		edit.add(new DeleteAllMenuItem(this));
 		edit.add(new ChangeTextSize());
-
+		
 		JPanel panel = new JPanel();
 
 		JButton New = new JButton("New");
@@ -90,9 +93,11 @@ public class ToDo {
 	private class NewListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			String s = JOptionPane.showInputDialog("Enter your note");
+			if(s != null){
 			model.addRow(new Object[] { s });
 			fixRowHight();
-			//TODO add mouselistner to each row
+			}
+			// TODO add mouselistner to each row
 		}
 	}
 
@@ -100,7 +105,7 @@ public class ToDo {
 		for (int row = 0; row < table.getRowCount(); row++) {
 			int rowHeight = table.getRowHeight();
 			Component comp = table.prepareRenderer(
-			table.getCellRenderer(row, 0), row, 0);
+					table.getCellRenderer(row, 0), row, 0);
 			rowHeight = Math.max(rowHeight, comp.getPreferredSize().height);
 			table.setRowHeight(row, rowHeight);
 		}
@@ -108,42 +113,62 @@ public class ToDo {
 
 	private class doneListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			setRowColour("green");
+			int row = table.getSelectedRow();
+			if(row != -1)
+			setRowColour(Color.GREEN, row);
+			model.fireTableRowsUpdated(row, row);
 		}
 	}
 
-	private void setRowColour(String colour) {
+	private void setRowColour(Color color, int pos) {
 		table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
 			@Override
 			public Component getTableCellRendererComponent(JTable table,
 					Object value, boolean isSelected, boolean hasFocus,
 					int row, int column) {
 				final Component c = super.getTableCellRendererComponent(table,
-						value, isSelected, hasFocus, row, column);
-				if (colour.equalsIgnoreCase("green")) {
-					c.setBackground(Color.GREEN);
+					value, isSelected, hasFocus, row, column);
+				System.out.println(row);
+				if(row == pos){
+					c.setBackground(color);
+				} else 
+					if(!c.getBackground().equals(color)){
+					c.setBackground(Color.WHITE);
+				}
 					return c;
 				}
-				c.setBackground(Color.WHITE);
-				return c;
-			}
 		});
-
+//			 public Component prepareRenderer(TableCellRenderer renderer, int row, int column)
+//		     {
+//		          Component c = super.prepareRenderer(renderer, row, column);
+//
+//		          if (!isRowSelected(row))
+//		          {
+//		               Color color = rowColor.get( row );
+//		               c.setBackground(color == null ? getBackground() : color);
+//		          }
+//
+//		          return c;
+//		     
 	}
 
 	public void removeAll() {
 		int rows = model.getRowCount();
-		System.out.println(rows);
 		for (int i = rows - 1; i >= 0; i--) {
 			model.removeRow(i);
 		}
 	}
 
 	public void remove() {
+		try{
 		model.removeRow(table.getSelectedRow());
+		} catch(ArrayIndexOutOfBoundsException e){
+		return;
+		}
 	}
 
 	private void onExit() {
+		//TODO save file
 		System.exit(0);
 
 	}

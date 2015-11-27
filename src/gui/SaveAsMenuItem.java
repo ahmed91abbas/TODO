@@ -5,9 +5,9 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JMenuItem;
 
-public class SaveMenuItem extends JMenuItem implements ActionListener{
-	public SaveMenuItem(){
-		super("Save");
+public class SaveAsMenuItem extends JMenuItem implements ActionListener{
+	public SaveAsMenuItem(){
+		super("Save as");
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
