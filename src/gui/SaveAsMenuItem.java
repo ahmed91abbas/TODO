@@ -1,18 +1,29 @@
 package gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+
+import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 
-public class SaveAsMenuItem extends JMenuItem implements ActionListener{
-	public SaveAsMenuItem(){
-		super("Save as");
+
+
+
+public class SaveAsMenuItem extends FileMenu{
+	private ToDo todo;
+	public SaveAsMenuItem(ToDo todo){
+		super(todo,"Save as");
+		this.todo = todo;
 	}
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+	
+	protected void action(File file) throws FileNotFoundException {
+		todo.saveToFile(file);
 	}
 
+	protected int openDialog(JFileChooser fileChooser) {
+		return fileChooser.showSaveDialog(todo);
+	}
+
+	
 }

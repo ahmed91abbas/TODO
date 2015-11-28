@@ -10,6 +10,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,13 +21,17 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 @SuppressWarnings("serial")
-public class ToDo extends JTable {
+public class ToDo extends JTable{
 	Map<Integer, Color> rowColor = new HashMap<Integer, Color>();
+	Map<Integer, String> db = new HashMap<Integer, String>();
 	private JFrame frame;
 	private DefaultTableModel model;
 	private String fileName = "To do";
@@ -53,14 +59,18 @@ public class ToDo extends JTable {
 		menu.add(file);
 		menu.add(edit);
 		menu.add(lastMod); // TODO implement
-		file.add(new OpenMenuItem());
-		file.add(new SaveAsMenuItem());
+		file.add(new OpenMenuItem(this));
+		file.add(new SaveAsMenuItem(this));
 		file.add(new NewMenuItem());
 		edit.add(new DeleteMenuItem(this));
 		edit.add(new DeleteAllMenuItem(this));
 		edit.add(new ChangeTextSize(this));
 
 		JPanel panel = new JPanel();
+		
+		JScrollPane js=new JScrollPane(this);
+		js.setVisible(true);
+		frame.add(js);
 
 		JButton New = new JButton("New");
 		New.addActionListener(new NewListener());
@@ -83,6 +93,14 @@ public class ToDo extends JTable {
 		setFont(new Font("Serif", Font.PLAIN, textSize));
 		model.addColumn("Col1");
 
+		getModel().addTableModelListener(new TableModelListener() {
+
+		      public void tableChanged(TableModelEvent e) {
+		         fixRowHight();
+		      }
+		    });
+		
+		
 		frame.add(panel, BorderLayout.PAGE_END);
 		frame.add(this);
 
@@ -97,6 +115,8 @@ public class ToDo extends JTable {
 			String s = JOptionPane.showInputDialog("Enter your note");
 			if (s != null) {
 				model.addRow(new Object[] { s });
+				int lastRow = convertRowIndexToView(model.getRowCount() - 1);
+				db.put(lastRow, s);
 				fixRowHight();
 			}
 		}
@@ -147,13 +167,20 @@ public class ToDo extends JTable {
 		int rows = model.getRowCount();
 		for (int i = rows - 1; i >= 0; i--) {
 			model.removeRow(i);
+			db.remove(i);
 		}
 	}
 
 	public void remove() {
 		try {
-			model.removeRow(getSelectedRow());
+			int row = getSelectedRow();
+			setRowColor(row, Color.WHITE);	
+			rowColor.remove(row);
+			db.remove(row);
+			model.removeRow(row);
 		} catch (ArrayIndexOutOfBoundsException e) {
+			return;
+		} catch ( NullPointerException e) {
 			return;
 		}
 	}
@@ -164,9 +191,57 @@ public class ToDo extends JTable {
 
 	}
 
+	
+
+	public void rename(String name) {
+		fileName = name;
+		frame.setTitle(fileName);
+		
+	}
+	
+	public void load(Map<Integer,String> loadmap) {
+		db.clear();
+		removeAll();
+		db.putAll(loadmap);
+		for (int i = 0; i < db.size(); i++){
+			String s = db.get(i);
+			model.addRow(new Object[] { s });
+		}
+		fixRowHight();
+	}
+
+	public void loadFromFile(File file) throws FileNotFoundException {
+		ToDoBufferedReader read = new ToDoBufferedReader(file.toString(), this);
+		try {
+			read.load();
+			read.close();
+		} catch (Exception e) {
+			db.clear();
+		}
+	}
+
+	public void saveToFile(File file) throws FileNotFoundException {
+		if (file != null) {
+			String filename = file.getName();
+			ToDoPrintStream print;
+
+			if (filename.length() > 3 && filename.substring(filename.length() - 4).equalsIgnoreCase(".txt")) {
+				if (filename.equals(".txt") || (Character.toString(filename.charAt(0)).equals(" "))) {
+					throw new FileNotFoundException(" Illegal file name. Save aborted.");
+				}
+
+				print = new ToDoPrintStream(file.toString());
+			} else {
+
+				print = new ToDoPrintStream(file.toString() + ".txt");
+			}
+			print.save(db.entrySet());
+			print.close();
+		}
+	}
+	
 	public static void main(String[] args) {
 		@SuppressWarnings("unused")
 		ToDo toDo = new ToDo();
 	}
-
 }
