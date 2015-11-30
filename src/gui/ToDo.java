@@ -14,10 +14,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -64,11 +66,12 @@ public class ToDo extends JTable {
 		file.add(new RenameMenuItem(this));// TODO fix
 		edit.add(new DeleteMenuItem(this));
 		edit.add(new DeleteAllMenuItem(this));
+		edit.add(new MarkAsUndone());
 		edit.add(new ChangeTextSize(this));
 
 		JPanel panel = new JPanel();
-
-		// JScrollPane js = new JScrollPane(this);//TODO fix scrolling and fit
+		//TODO fix scrolling and fit
+		// JScrollPane js = new JScrollPane(this);
 		// text to wedith
 		// js.setVisible(true);
 		// frame.add(js);
@@ -143,7 +146,7 @@ public class ToDo extends JTable {
 	}
 
 	private void updateDatabase() {
-		for (int row = 0; row < db.size(); row++) {
+		for (int row = 0; row < model.getRowCount(); row++) {
 			String s = (String) model.getValueAt(row, 0);
 			if (isDone(row)) {
 				db.put(row, s + "#green");
@@ -195,6 +198,23 @@ public class ToDo extends JTable {
 			model.fireTableRowsUpdated(row, row);
 		}
 	}
+	private class MarkAsUndone extends JMenuItem implements ActionListener{
+		public MarkAsUndone(){
+			super("Mark as undone");
+			addActionListener(this);
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			int row = getSelectedRow();
+			if(isDone(row)){
+				String s = db.get(row);
+				s = s.substring(0, s.length() - 6);
+				db.put(row, s);
+			}
+		}
+
+	}
+
 
 	private class saveAndClose implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
@@ -228,6 +248,7 @@ public class ToDo extends JTable {
 			int row = getSelectedRow();
 			model.removeRow(row);
 			db.remove(row);
+			model.fireTableRowsDeleted(row, row);
 		} catch (ArrayIndexOutOfBoundsException e) {
 			return;
 		} catch (NullPointerException e) {
