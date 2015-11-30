@@ -5,8 +5,9 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JMenuItem;
 
-public class NewMenuItem extends JMenuItem implements ActionListener{
-	public NewMenuItem(){
+@SuppressWarnings("serial")
+public class NewFileMenuItem extends JMenuItem implements ActionListener{
+	public NewFileMenuItem(){
 		super("New list");
 	}
 	@Override

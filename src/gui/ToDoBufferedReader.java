@@ -14,9 +14,7 @@ public class ToDoBufferedReader extends BufferedReader {
 		this.todo = todo;
 	}
 
-	/**
-	 * Loads sheet from file
-	 */
+
 	public void load() {
 		HashMap<Integer, String> map = new HashMap<Integer, String>();
 		try {

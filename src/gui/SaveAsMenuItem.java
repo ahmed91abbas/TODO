@@ -3,13 +3,9 @@ package gui;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-
 import javax.swing.JFileChooser;
-import javax.swing.JMenuItem;
 
-
-
-
+@SuppressWarnings("serial")
 public class SaveAsMenuItem extends FileMenu{
 	private ToDo todo;
 	public SaveAsMenuItem(ToDo todo){

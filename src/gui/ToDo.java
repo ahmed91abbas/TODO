@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -29,8 +28,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 @SuppressWarnings("serial")
-public class ToDo extends JTable{
-	Map<Integer, Color> rowColor = new HashMap<Integer, Color>();
+public class ToDo extends JTable {
 	Map<Integer, String> db = new HashMap<Integer, String>();
 	private JFrame frame;
 	private DefaultTableModel model;
@@ -61,16 +59,24 @@ public class ToDo extends JTable{
 		menu.add(lastMod); // TODO implement
 		file.add(new OpenMenuItem(this));
 		file.add(new SaveAsMenuItem(this));
-		file.add(new NewMenuItem());
+		file.add(new NewFileMenuItem());// TODO
+		file.add(new DeleteFileMenuItem(this));
+		file.add(new RenameMenuItem(this));// TODO fix
 		edit.add(new DeleteMenuItem(this));
 		edit.add(new DeleteAllMenuItem(this));
 		edit.add(new ChangeTextSize(this));
 
 		JPanel panel = new JPanel();
-		
-		JScrollPane js=new JScrollPane(this);
-		js.setVisible(true);
-		frame.add(js);
+
+		// JScrollPane js = new JScrollPane(this);//TODO fix scrolling and fit
+		// text to wedith
+		// js.setVisible(true);
+		// frame.add(js);
+
+		JScrollPane sp = new JScrollPane(this,
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		frame.getContentPane().add(sp);
 
 		JButton New = new JButton("New");
 		New.addActionListener(new NewListener());
@@ -95,12 +101,11 @@ public class ToDo extends JTable{
 
 		getModel().addTableModelListener(new TableModelListener() {
 
-		      public void tableChanged(TableModelEvent e) {
-		         fixRowHight();
-		      }
-		    });
-		
-		
+			public void tableChanged(TableModelEvent e) {
+				fixRowHight();
+			}
+		});
+
 		frame.add(panel, BorderLayout.PAGE_END);
 		frame.add(this);
 
@@ -137,30 +142,77 @@ public class ToDo extends JTable{
 		}
 	}
 
+	private void updateDatabase() {
+		for (int row = 0; row < db.size(); row++) {
+			String s = (String) model.getValueAt(row, 0);
+			if (isDone(row)) {
+				db.put(row, s + "#green");
+			} else {
+				db.put(row, s);
+			}
+		}
+	}
+
 	@Override
 	public Component prepareRenderer(TableCellRenderer renderer, int row,
 			int column) {
 		Component c = super.prepareRenderer(renderer, row, column);
 
 		if (!isRowSelected(row)) {
-			Color color = rowColor.get(row);
+			Color color;
+			if (isDone(row)) {
+				color = Color.GREEN;
+			} else {
+				color = Color.WHITE;
+			}
 			c.setBackground(color == null ? getBackground() : color);
 		}
 
 		return c;
 	}
 
-	public void setRowColor(int row, Color color) {
-		rowColor.put(row, color);
+	private boolean isDone(int row) {
+		String s = "";
+		try {
+			s = db.get(row);
+			if (s.length() > 6
+					&& s.substring(s.length() - 6).equalsIgnoreCase("#green")) {
+				return true;
+			}
+		} catch (NullPointerException e) {
+			return false;
+		}
+		return false;
 	}
 
 	private class doneListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			int row = getSelectedRow();
-			if (row != -1)
-				setRowColor(row, Color.GREEN);
-			model.fireTableRowsUpdated(row, row);//TODO not working probably
+			if (row != -1) {
+				String s = db.get(row);
+				db.put(row, s + "#green");
+			}
+			model.fireTableRowsUpdated(row, row);
 		}
+	}
+
+	private class saveAndClose implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			saveAndClose();
+		}
+	}
+
+	private void saveAndClose() {
+		updateDatabase();
+		ToDoPrintStream print;
+		try {
+			print = new ToDoPrintStream(fileName);
+			print.save(db.entrySet());
+			System.exit(0);
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		}
+		;
 	}
 
 	public void removeAll() {
@@ -171,40 +223,51 @@ public class ToDo extends JTable{
 		}
 	}
 
-	public void remove() {
+	public void remove() { //TODO fix color adjustment
 		try {
 			int row = getSelectedRow();
-			setRowColor(row, Color.WHITE);	
-			rowColor.remove(row);
-			db.remove(row);
 			model.removeRow(row);
+			db.remove(row);
 		} catch (ArrayIndexOutOfBoundsException e) {
 			return;
-		} catch ( NullPointerException e) {
+		} catch (NullPointerException e) {
 			return;
 		}
 	}
 
 	private void onExit() {
-		// TODO save file
-		System.exit(0);
+		String message = "Save changes before exit?";
 
+		final String objButtons[] = { "Yes", "No", "Cancel" };
+		int option = JOptionPane.showOptionDialog(null, message, "Obs...",
+				JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
+				objButtons, objButtons[2]);
+		if (option == 0) {
+			saveAndClose();
+		}
+		if (option == 1) {
+			System.exit(0);
+		}
+		return;
 	}
-
-	
 
 	public void rename(String name) {
 		fileName = name;
 		frame.setTitle(fileName);
-		
+
 	}
-	
-	public void load(Map<Integer,String> loadmap) {
+
+	public void load(Map<Integer, String> loadmap) {
 		db.clear();
 		removeAll();
 		db.putAll(loadmap);
-		for (int i = 0; i < db.size(); i++){
+		for (int i = 0; i < db.size(); i++) {
 			String s = db.get(i);
+			if (s.length() > 6
+					&& s.substring(s.length() - 6).equalsIgnoreCase("#green")) {
+				s = s.substring(0, s.length() - 6);
+
+			}
 			model.addRow(new Object[] { s });
 		}
 		fixRowHight();
@@ -225,9 +288,13 @@ public class ToDo extends JTable{
 			String filename = file.getName();
 			ToDoPrintStream print;
 
-			if (filename.length() > 3 && filename.substring(filename.length() - 4).equalsIgnoreCase(".txt")) {
-				if (filename.equals(".txt") || (Character.toString(filename.charAt(0)).equals(" "))) {
-					throw new FileNotFoundException(" Illegal file name. Save aborted.");
+			if (filename.length() > 3
+					&& filename.substring(filename.length() - 4)
+							.equalsIgnoreCase(".txt")) {
+				if (filename.equals(".txt")
+						|| (Character.toString(filename.charAt(0)).equals(" "))) {
+					throw new FileNotFoundException(
+							" Illegal file name. Save aborted.");
 				}
 
 				print = new ToDoPrintStream(file.toString());
@@ -235,11 +302,13 @@ public class ToDo extends JTable{
 
 				print = new ToDoPrintStream(file.toString() + ".txt");
 			}
+			updateDatabase();
+			rename(filename);
 			print.save(db.entrySet());
 			print.close();
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		@SuppressWarnings("unused")
 		ToDo toDo = new ToDo();

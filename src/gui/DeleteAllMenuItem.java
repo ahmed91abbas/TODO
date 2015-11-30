@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+@SuppressWarnings("serial")
 public class DeleteAllMenuItem extends JMenuItem implements ActionListener{
 	private ToDo todo;
 	public DeleteAllMenuItem(ToDo todo){
