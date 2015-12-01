@@ -149,7 +149,7 @@ public class ToDo extends JTable {
 		for (int row = 0; row < model.getRowCount(); row++) {
 			String s = (String) model.getValueAt(row, 0);
 			if (isDone(row)) {
-				db.put(row, s + "#green");
+				db.put(row, s + "#done");
 			} else {
 				db.put(row, s);
 			}
@@ -178,8 +178,8 @@ public class ToDo extends JTable {
 		String s = "";
 		try {
 			s = db.get(row);
-			if (s.length() > 6
-					&& s.substring(s.length() - 6).equalsIgnoreCase("#green")) {
+			if (s.length() > 5
+					&& s.substring(s.length() - 5).equalsIgnoreCase("#done")) {
 				return true;
 			}
 		} catch (NullPointerException e) {
@@ -193,7 +193,7 @@ public class ToDo extends JTable {
 			int row = getSelectedRow();
 			if (row != -1) {
 				String s = db.get(row);
-				db.put(row, s + "#green");
+				db.put(row, s + "#done");
 			}
 			model.fireTableRowsUpdated(row, row);
 		}
@@ -285,8 +285,8 @@ public class ToDo extends JTable {
 		for (int i = 0; i < db.size(); i++) {
 			String s = db.get(i);
 			if (s.length() > 6
-					&& s.substring(s.length() - 6).equalsIgnoreCase("#green")) {
-				s = s.substring(0, s.length() - 6);
+					&& s.substring(s.length() - 5).equalsIgnoreCase("#done")) {
+				s = s.substring(0, s.length() - 5);
 
 			}
 			model.addRow(new Object[] { s });
