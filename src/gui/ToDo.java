@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -36,8 +35,10 @@ public class ToDo extends JTable {
 	private DefaultTableModel model;
 	private String fileName = "To do";
 	private int textSize = 25;
+	private LastOpened lastOpened;
 
 	public ToDo() {
+		lastOpened = new LastOpened(this);
 		frame = new JFrame(fileName);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -55,10 +56,9 @@ public class ToDo extends JTable {
 		frame.setJMenuBar(menu);
 		JMenu file = new JMenu("File");
 		JMenu edit = new JMenu("Edit");
-		JMenu lastMod = new JMenu("Last modified");
 		menu.add(file);
 		menu.add(edit);
-		menu.add(lastMod); // TODO implement
+		menu.add(lastOpened);
 		file.add(new OpenMenuItem(this));
 		file.add(new SaveAsMenuItem(this));
 		file.add(new NewFileMenuItem());// TODO
@@ -70,7 +70,7 @@ public class ToDo extends JTable {
 		edit.add(new ChangeTextSize(this));
 
 		JPanel panel = new JPanel();
-		//TODO fix scrolling and fit
+		// TODO fix scrolling and fit
 		// JScrollPane js = new JScrollPane(this);
 		// text to wedith
 		// js.setVisible(true);
@@ -198,15 +198,17 @@ public class ToDo extends JTable {
 			model.fireTableRowsUpdated(row, row);
 		}
 	}
-	private class MarkAsUndone extends JMenuItem implements ActionListener{
-		public MarkAsUndone(){
+
+	private class MarkAsUndone extends JMenuItem implements ActionListener {
+		public MarkAsUndone() {
 			super("Mark as undone");
 			addActionListener(this);
 		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			int row = getSelectedRow();
-			if(isDone(row)){
+			if (isDone(row)) {
 				String s = db.get(row);
 				s = s.substring(0, s.length() - 6);
 				db.put(row, s);
@@ -214,7 +216,6 @@ public class ToDo extends JTable {
 		}
 
 	}
-
 
 	private class saveAndClose implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
@@ -243,7 +244,7 @@ public class ToDo extends JTable {
 		}
 	}
 
-	public void remove() { //TODO fix color adjustment
+	public void remove() { // TODO fix color adjustment
 		try {
 			int row = getSelectedRow();
 			model.removeRow(row);
@@ -297,6 +298,7 @@ public class ToDo extends JTable {
 	public void loadFromFile(File file) throws FileNotFoundException {
 		ToDoBufferedReader read = new ToDoBufferedReader(file.toString(), this);
 		try {
+			lastOpened.add(file.toString());
 			read.load();
 			read.close();
 		} catch (Exception e) {
