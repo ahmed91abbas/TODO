@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -36,6 +37,7 @@ public class ToDo extends JTable {
 	private String fileName = "To do";
 	private int textSize = 25;
 	private LastOpened lastOpened;
+	private ToDoPrintStream print;
 
 	public ToDo() {
 		lastOpened = new LastOpened(this);
@@ -61,7 +63,8 @@ public class ToDo extends JTable {
 		menu.add(lastOpened);
 		file.add(new OpenMenuItem(this));
 		file.add(new SaveAsMenuItem(this));
-		file.add(new NewFileMenuItem());// TODO
+		file.add(new NewFileMenuItem(this));// TODO Opens a new jchoosefile and
+		// creates a new file be4 opening
 		file.add(new DeleteFileMenuItem(this));
 		file.add(new RenameMenuItem(this));// TODO fix
 		edit.add(new DeleteMenuItem(this));
@@ -217,33 +220,36 @@ public class ToDo extends JTable {
 
 	}
 
-	private class saveAndClose implements ActionListener {
+	private class saveAndClose implements ActionListener { // TODO take care of
+															// case file not
+															// found
 		public void actionPerformed(ActionEvent e) {
-			saveAndClose();
+			save();
+			System.exit(0);
 		}
 	}
 
-	private void saveAndClose() {
+	public void save() {
 		updateDatabase();
 		ToDoPrintStream print;
 		try {
 			print = new ToDoPrintStream(fileName);
 			print.save(db.entrySet());
-			System.exit(0);
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}
 		;
 	}
 
-	public void removeAll() { //TODO returns arrayoutofbounds after deleting 2 times?
-		
+	public void removeAll() { // TODO returns arrayoutofbounds after deleting 2
+								// times?
+
 		int rows = model.getRowCount();
 		for (int i = rows - 1; i >= 0; i--) {
 			model.removeRow(i);
 			db.remove(i);
 		}
-		
+
 	}
 
 	public void remove() { // TODO fix color adjustment
@@ -267,7 +273,8 @@ public class ToDo extends JTable {
 				JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
 				objButtons, objButtons[2]);
 		if (option == 0) {
-			saveAndClose();
+			save();
+			System.exit(0);
 		}
 		if (option == 1) {
 			System.exit(0);
@@ -308,11 +315,17 @@ public class ToDo extends JTable {
 		}
 	}
 
-	public void saveToFile(File file) throws FileNotFoundException {
+	public void saveToFile() {
+		updateDatabase();
+		print.save(db.entrySet());
+		print.close();
+
+	}
+
+	public void createNewFile(File file) throws FileNotFoundException {
 		if (file != null) {
 			String filename = file.getName();
-			ToDoPrintStream print;
-
+			rename(filename);
 			if (filename.length() > 3
 					&& filename.substring(filename.length() - 4)
 							.equalsIgnoreCase(".txt")) {
@@ -321,16 +334,11 @@ public class ToDo extends JTable {
 					throw new FileNotFoundException(
 							" Illegal file name. Save aborted.");
 				}
-
 				print = new ToDoPrintStream(file.toString());
 			} else {
 
 				print = new ToDoPrintStream(file.toString() + ".txt");
 			}
-			updateDatabase();
-			rename(filename);
-			print.save(db.entrySet());
-			print.close();
 		}
 	}
 
@@ -338,4 +346,5 @@ public class ToDo extends JTable {
 		@SuppressWarnings("unused")
 		ToDo toDo = new ToDo();
 	}
+
 }

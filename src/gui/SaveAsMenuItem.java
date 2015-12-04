@@ -14,7 +14,8 @@ public class SaveAsMenuItem extends FileMenu{
 	}
 	
 	protected void action(File file) throws FileNotFoundException {
-		todo.saveToFile(file);
+		todo.createNewFile(file);
+		todo.saveToFile();
 	}
 
 	protected int openDialog(JFileChooser fileChooser) {

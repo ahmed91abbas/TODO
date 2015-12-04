@@ -1,19 +1,31 @@
 package gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import javax.swing.JFileChooser;
 
-import javax.swing.JMenuItem;
 
 @SuppressWarnings("serial")
-public class NewFileMenuItem extends JMenuItem implements ActionListener{
-	public NewFileMenuItem(){
-		super("New list");
+public class NewFileMenuItem extends FileMenu{
+	private ToDo todo;
+	
+	public NewFileMenuItem(ToDo todo){
+		super(todo,"New list");
+		this.todo = todo;
 	}
+
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+	protected void action(File file) throws FileNotFoundException {
+		todo.save();
+		todo.removeAll();
+		todo.createNewFile(file);
 	}
+
+	@Override
+	protected int openDialog(JFileChooser fileChooser) {
+		fileChooser.setApproveButtonText("Create");
+		return fileChooser.showOpenDialog(todo);
+	}
+	
 
 }

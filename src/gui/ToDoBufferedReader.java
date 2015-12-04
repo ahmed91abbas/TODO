@@ -26,6 +26,8 @@ public class ToDoBufferedReader extends BufferedReader {
 			}
 			todo.load(map);
 		} catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("in bufferedreader ");
 			return;
 		}
 	}
