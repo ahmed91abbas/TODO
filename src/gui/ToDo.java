@@ -236,12 +236,14 @@ public class ToDo extends JTable {
 		;
 	}
 
-	public void removeAll() {
+	public void removeAll() { //TODO returns arrayoutofbounds after deleting 2 times?
+		
 		int rows = model.getRowCount();
 		for (int i = rows - 1; i >= 0; i--) {
 			model.removeRow(i);
 			db.remove(i);
 		}
+		
 	}
 
 	public void remove() { // TODO fix color adjustment
