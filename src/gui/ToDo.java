@@ -41,6 +41,9 @@ public class ToDo extends JTable {
 
 	public ToDo() {
 		lastOpened = new LastOpened(this);
+		lastOpened.loadLastOpenedFiles();
+		lastOpened.openTheLastOpenedFile();
+		
 		frame = new JFrame(fileName);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -71,6 +74,7 @@ public class ToDo extends JTable {
 		edit.add(new DeleteAllMenuItem(this));
 		edit.add(new MarkAsUndone());
 		edit.add(new ChangeTextSize(this));
+		edit.add(new ClearLastOpened());
 
 		JPanel panel = new JPanel();
 		// TODO fix scrolling and fit
@@ -219,6 +223,18 @@ public class ToDo extends JTable {
 		}
 
 	}
+	private class ClearLastOpened extends JMenuItem implements ActionListener {
+		public ClearLastOpened() {
+			super("Clear last opened list");
+			addActionListener(this);
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			lastOpened.clear();
+		}
+
+	}
+	
 
 	private class saveAndClose implements ActionListener { // TODO take care of
 															// case file not
@@ -237,8 +253,8 @@ public class ToDo extends JTable {
 			print.save(db.entrySet());
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
-		}
-		;
+		};
+		lastOpened.addLastOpenedFiles();
 	}
 
 	public void removeAll() { // TODO returns arrayoutofbounds after deleting 2
