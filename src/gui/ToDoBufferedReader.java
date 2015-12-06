@@ -2,16 +2,19 @@
 package gui;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
 
 public class ToDoBufferedReader extends BufferedReader {
 	private ToDo todo;
+	private File file;
 
 	public ToDoBufferedReader(String name, ToDo todo) throws FileNotFoundException {
 		super(new FileReader(name));
 		this.todo = todo;
+		file = new File(name);
 	}
 
 
@@ -25,9 +28,9 @@ public class ToDoBufferedReader extends BufferedReader {
 				i++;
 			}
 			todo.load(map);
+			todo.rename(file.getName(),false,true);
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("in bufferedreader ");
 			return;
 		}
 	}

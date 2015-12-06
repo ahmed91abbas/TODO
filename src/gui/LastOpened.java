@@ -2,10 +2,13 @@ package gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+
 import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
 
@@ -45,24 +48,27 @@ public class LastOpened extends JMenuItem implements ActionListener {
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	public void add(String s) {
-		c.insertItemAt(s, 0);
+		if (((DefaultComboBoxModel) c.getModel()).getIndexOf(s) == -1) {
+			c.insertItemAt(s, 0);
+		}
+
 	}
 
 	public void loadLastOpenedFiles() {
 		String id;
 		for (int i = 0; i < 10; i++) {
 			id = "ID" + Integer.toString(i);
-			String s = prefs.get(id, "");
-			if (s != null && !s.equals(""))
-				add(s);
+			String filePath = prefs.get(id, "");
+			File file = new File(filePath);
+			if (filePath != null && !filePath.equals("") && file.exists())
+				add(filePath);
 		}
-
 	}
 
-	public void openTheLastOpenedFile() {//TODO fix
-		String filePath = prefs.get(ID0, "");
-		System.out.println(filePath);
+	public void openTheLastOpenedFile() {
+		String filePath = prefs.get("ID0", "");
 		if (filePath != null && !filePath.equals("")) {
 			try {
 				readFile(filePath);
@@ -72,11 +78,11 @@ public class LastOpened extends JMenuItem implements ActionListener {
 		}
 	}
 
-	public void addLastOpenedFiles() {
+	public void addLastOpenedFiles() { // TODO not saving in the right order and limit the size to 10
 		ComboBoxModel<String> model = c.getModel();
 		int size = model.getSize();
 		String id;
-		for (int i = 0; i < size; i++) {
+		for (int i = 0 % 10; i < size; i++) {
 			id = "ID" + Integer.toString(i);
 			Object element = model.getElementAt(i);
 			prefs.put(id, (String) element);

@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,8 +43,7 @@ public class ToDo extends JTable {
 	public ToDo() {
 		lastOpened = new LastOpened(this);
 		lastOpened.loadLastOpenedFiles();
-		lastOpened.openTheLastOpenedFile();
-		
+
 		frame = new JFrame(fileName);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -118,10 +118,11 @@ public class ToDo extends JTable {
 
 		frame.add(panel, BorderLayout.PAGE_END);
 		frame.add(this);
-
 		frame.setPreferredSize(new Dimension(500, 500));
 		frame.pack();
 		frame.setVisible(true);
+
+		lastOpened.openTheLastOpenedFile();
 	}
 
 	private class NewListener implements ActionListener {
@@ -223,18 +224,19 @@ public class ToDo extends JTable {
 		}
 
 	}
+
 	private class ClearLastOpened extends JMenuItem implements ActionListener {
 		public ClearLastOpened() {
 			super("Clear last opened list");
 			addActionListener(this);
 		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			lastOpened.clear();
 		}
 
 	}
-	
 
 	private class saveAndClose implements ActionListener { // TODO take care of
 															// case file not
@@ -253,7 +255,8 @@ public class ToDo extends JTable {
 			print.save(db.entrySet());
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
-		};
+		}
+		;
 		lastOpened.addLastOpenedFiles();
 	}
 
@@ -298,10 +301,19 @@ public class ToDo extends JTable {
 		return;
 	}
 
-	public void rename(String name) {
-		fileName = name;
-		frame.setTitle(fileName);
-
+	public void rename(String newName, boolean renameFile, boolean renameFrame)
+			throws IOException {
+		if (renameFile) {
+			File oldFile = new File(fileName);
+			File newFile = new File(newName);
+			if (newFile.exists())
+				throw new java.io.IOException("file exists");
+			oldFile.renameTo(newFile);
+		}
+		if (renameFrame) {
+			fileName = newName;
+			frame.setTitle(fileName);
+		}
 	}
 
 	public void load(Map<Integer, String> loadmap) {
@@ -341,7 +353,13 @@ public class ToDo extends JTable {
 	public void createNewFile(File file) throws FileNotFoundException {
 		if (file != null) {
 			String filename = file.getName();
-			rename(filename);
+			try {
+				rename(filename,true,true);
+			} catch (IOException e) {
+				JOptionPane.showMessageDialog(null, e.getMessage(), "Obs...",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 			if (filename.length() > 3
 					&& filename.substring(filename.length() - 4)
 							.equalsIgnoreCase(".txt")) {

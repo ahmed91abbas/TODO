@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -33,8 +35,8 @@ public abstract class FileMenu extends JMenuItem implements ActionListener {
 			File file = fileChooser.getSelectedFile();
 			try {
 				action(file);
-				todo.rename(file.getName());
-			} catch (FileNotFoundException e) {
+				todo.rename(file.getName(),false,true);
+			} catch (IOException e) {
 				JOptionPane.showMessageDialog(null, e.getMessage(), "Obs",
 						JOptionPane.INFORMATION_MESSAGE);
 

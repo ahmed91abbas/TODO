@@ -3,7 +3,10 @@ package gui;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 @SuppressWarnings("serial")
 public class DeleteFileMenuItem extends FileMenu {
@@ -16,7 +19,14 @@ public class DeleteFileMenuItem extends FileMenu {
 
 	@Override
 	protected void action(File file) throws FileNotFoundException {
-		file.delete();
+		try {
+			file.createNewFile();
+			file.delete();
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Something went wrong while deleting the file!", "Obs",
+					JOptionPane.INFORMATION_MESSAGE);
+		}
+		
 	}
 
 	@Override
