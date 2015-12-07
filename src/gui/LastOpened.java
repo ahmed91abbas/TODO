@@ -53,7 +53,6 @@ public class LastOpened extends JMenuItem implements ActionListener {
 		if (((DefaultComboBoxModel) c.getModel()).getIndexOf(s) == -1) {
 			c.insertItemAt(s, 0);
 		}
-
 	}
 
 	public void loadLastOpenedFiles() {
@@ -82,10 +81,15 @@ public class LastOpened extends JMenuItem implements ActionListener {
 		ComboBoxModel<String> model = c.getModel();
 		int size = model.getSize();
 		String id;
-		for (int i = 0 % 10; i < size; i++) {
-			id = "ID" + Integer.toString(i);
-			Object element = model.getElementAt(i);
+		for (int i = 0 ; i < size; i++) {
+			int x = i / 10;
+			if(x != 0){
+				c.removeItemAt(i);
+			}
+			id = "ID" + Integer.toString(i%10);
+			Object element = model.getElementAt(i%10);
 			prefs.put(id, (String) element);
+			
 		}
 	}
 

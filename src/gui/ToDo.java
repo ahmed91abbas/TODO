@@ -238,11 +238,21 @@ public class ToDo extends JTable {
 
 	}
 
-	private class saveAndClose implements ActionListener { // TODO take care of
-															// case file not
-															// found
+	private class saveAndClose implements ActionListener { //TODO creating an extra file with no extenstion
 		public void actionPerformed(ActionEvent e) {
-			save();
+			File file = new File(fileName);
+			if (!file.exists()) {
+				// TODO saveas
+				try {
+					createNewFile(file);
+					saveToFile();
+				} catch (FileNotFoundException e1) {
+					JOptionPane.showMessageDialog(null, e1.getMessage(),
+							"Obs...", JOptionPane.ERROR_MESSAGE);
+				}
+			} else {
+				save();
+			}
 			System.exit(0);
 		}
 	}
@@ -260,8 +270,7 @@ public class ToDo extends JTable {
 		lastOpened.addLastOpenedFiles();
 	}
 
-	public void removeAll() { // TODO returns arrayoutofbounds after deleting 2
-								// times?
+	public void removeAll() {
 
 		int rows = model.getRowCount();
 		for (int i = rows - 1; i >= 0; i--) {
@@ -276,7 +285,7 @@ public class ToDo extends JTable {
 			int row = getSelectedRow();
 			model.removeRow(row);
 			db.remove(row);
-			model.fireTableRowsDeleted(row, row);
+			updateDatabase();
 		} catch (ArrayIndexOutOfBoundsException e) {
 			return;
 		} catch (NullPointerException e) {
@@ -302,13 +311,14 @@ public class ToDo extends JTable {
 	}
 
 	public void rename(String newName, boolean renameFile, boolean renameFrame)
-			throws IOException {
+			throws IOException { //TODO add .txt to newFile only when renamed file is being saved
 		if (renameFile) {
 			File oldFile = new File(fileName);
 			File newFile = new File(newName);
 			if (newFile.exists())
 				throw new java.io.IOException("file exists");
 			oldFile.renameTo(newFile);
+			lastOpened.add(newFile.getAbsolutePath());
 		}
 		if (renameFrame) {
 			fileName = newName;
@@ -354,7 +364,7 @@ public class ToDo extends JTable {
 		if (file != null) {
 			String filename = file.getName();
 			try {
-				rename(filename,true,true);
+				rename(filename, false, true);
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog(null, e.getMessage(), "Obs...",
 						JOptionPane.ERROR_MESSAGE);
