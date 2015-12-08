@@ -84,7 +84,7 @@ public class LastOpened extends JMenuItem implements ActionListener {
 		for (int i = 0 ; i < size; i++) {
 			int x = i / 10;
 			if(x != 0){
-				c.removeItemAt(i);
+				c.removeItemAt(i%10);
 			}
 			id = "ID" + Integer.toString(i%10);
 			Object element = model.getElementAt(i%10);

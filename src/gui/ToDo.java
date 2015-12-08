@@ -35,7 +35,8 @@ public class ToDo extends JTable {
 	Map<Integer, String> db = new HashMap<Integer, String>();
 	private JFrame frame;
 	private DefaultTableModel model;
-	private String fileName = "To do";
+	private String fileName = "To do"; // TODO making problem cause it's not
+										// giving the path
 	private int textSize = 25;
 	private LastOpened lastOpened;
 	private ToDoPrintStream print;
@@ -61,8 +62,10 @@ public class ToDo extends JTable {
 		frame.setJMenuBar(menu);
 		JMenu file = new JMenu("File");
 		JMenu edit = new JMenu("Edit");
+		JMenu help = new JMenu("Help");
 		menu.add(file);
 		menu.add(edit);
+		menu.add(help);// TODO add settings with shourtcut keys and about
 		menu.add(lastOpened);
 		file.add(new OpenMenuItem(this));
 		file.add(new SaveAsMenuItem(this));
@@ -77,6 +80,7 @@ public class ToDo extends JTable {
 		edit.add(new ClearLastOpened());
 
 		JPanel panel = new JPanel();
+		JPanel panel2 = new JPanel();
 		// TODO fix scrolling and fit
 		// JScrollPane js = new JScrollPane(this);
 		// text to wedith
@@ -84,9 +88,10 @@ public class ToDo extends JTable {
 		// frame.add(js);
 
 		JScrollPane sp = new JScrollPane(this,
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		frame.getContentPane().add(sp);
+				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		// frame.getContentPane().add(sp);
+		panel2.add(sp);
 
 		JButton New = new JButton("New");
 		New.addActionListener(new NewListener());
@@ -102,12 +107,16 @@ public class ToDo extends JTable {
 		panel.add(done);
 
 		GridLayout grid = new GridLayout(2, 1);
+		GridLayout grid2 = new GridLayout(1, 1);
+
 		panel.setLayout(grid);
+		panel2.setLayout(grid2);
 
 		model = new DefaultTableModel();
 		setModel(model);
 		setFont(new Font("Serif", Font.PLAIN, textSize));
-		model.addColumn("Col1");
+		model.addColumn(fileName);
+		setTableHeader(null);
 
 		getModel().addTableModelListener(new TableModelListener() {
 
@@ -116,8 +125,16 @@ public class ToDo extends JTable {
 			}
 		});
 
+//		setPreferredScrollableViewportSize(new Dimension(300, 200));
+//        setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+//        TableColumnAdjuster tca = new TableColumnAdjuster(this);
+//        tca.adjustColumns();
+		
+//		getColumnModel().getColumn(0).setPreferredWidth(600);
+//		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		
+		frame.add(panel2, BorderLayout.CENTER);
 		frame.add(panel, BorderLayout.PAGE_END);
-		frame.add(this);
 		frame.setPreferredSize(new Dimension(500, 500));
 		frame.pack();
 		frame.setVisible(true);
@@ -238,10 +255,14 @@ public class ToDo extends JTable {
 
 	}
 
-	private class saveAndClose implements ActionListener { //TODO creating an extra file with no extenstion
+	// TODO creating a new file instead of saving to the original when the file
+	// is not placed on the defulet directory
+	private class saveAndClose implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			File file = new File(fileName);
 			if (!file.exists()) {
+
+				System.out.println(fileName);
 				// TODO saveas
 				try {
 					createNewFile(file);
@@ -311,7 +332,8 @@ public class ToDo extends JTable {
 	}
 
 	public void rename(String newName, boolean renameFile, boolean renameFrame)
-			throws IOException { //TODO add .txt to newFile only when renamed file is being saved
+			throws IOException { // TODO add .txt to newFile only when renamed
+									// file is being saved
 		if (renameFile) {
 			File oldFile = new File(fileName);
 			File newFile = new File(newName);
