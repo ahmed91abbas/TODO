@@ -35,8 +35,7 @@ public class ToDo extends JTable {
 	Map<Integer, String> db = new HashMap<Integer, String>();
 	private JFrame frame;
 	private DefaultTableModel model;
-	private String fileName = "To do"; // TODO making problem cause it's not
-										// giving the path
+	private File file;
 	private int textSize = 25;
 	private LastOpened lastOpened;
 	private ToDoPrintStream print;
@@ -44,8 +43,9 @@ public class ToDo extends JTable {
 	public ToDo() {
 		lastOpened = new LastOpened(this);
 		lastOpened.loadLastOpenedFiles();
-
-		frame = new JFrame(fileName);
+		file = new File("To do");
+		
+		frame = new JFrame(file.getName());
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -83,7 +83,7 @@ public class ToDo extends JTable {
 		
 		JScrollPane sp = new JScrollPane(this,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); //TODO fix
 		panel2.add(sp);
 
 		JButton New = new JButton("New");
@@ -108,7 +108,7 @@ public class ToDo extends JTable {
 		model = new DefaultTableModel();
 		setModel(model);
 		setFont(new Font("Serif", Font.PLAIN, textSize));
-		model.addColumn(fileName);
+		model.addColumn(file.getName());
 		setTableHeader(null);
 
 		getModel().addTableModelListener(new TableModelListener() {
@@ -253,7 +253,6 @@ public class ToDo extends JTable {
 	private class saveAndClose implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
-			File file = new File(fileName);
 			if (!file.exists()) {
 				try {
 					createNewFile(file);
@@ -273,7 +272,7 @@ public class ToDo extends JTable {
 		updateDatabase();
 		ToDoPrintStream print;
 		try {
-			print = new ToDoPrintStream(fileName);
+			print = new ToDoPrintStream(file.getName());
 			print.save(db.entrySet());
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
@@ -329,17 +328,15 @@ public class ToDo extends JTable {
 			throw new java.io.IOException("Illegal file name. Renaming failed!");
 		}
 		if (renameFile) {
-			File oldFile = new File(fileName);
 			File newFile = new File(newName);
 			if (newFile.exists())
 				throw new java.io.IOException(
 						"A file with that name already exists");
-			oldFile.renameTo(newFile);
+			file.renameTo(newFile);
 			lastOpened.add(newFile.getAbsolutePath());
 		}
 		if (renameFrame) {
-			fileName = newName;
-			frame.setTitle(fileName);
+			frame.setTitle(newName);
 		}
 	}
 
@@ -362,6 +359,7 @@ public class ToDo extends JTable {
 	public void loadFromFile(File file) throws FileNotFoundException {
 		ToDoBufferedReader read = new ToDoBufferedReader(file.toString(), this);
 		try {
+			this.file = file;
 			lastOpened.add(file.toString());
 			read.load();
 			read.close();
