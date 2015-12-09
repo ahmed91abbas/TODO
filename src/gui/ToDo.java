@@ -354,7 +354,7 @@ public class ToDo extends JTable {
 		db.putAll(loadmap);
 		for (int i = 0; i < db.size(); i++) {
 			String s = db.get(i);
-			if (s.length() > 6
+			if (s.length() > 5
 					&& s.substring(s.length() - 5).equalsIgnoreCase("#done")) {
 				s = s.substring(0, s.length() - 5);
 

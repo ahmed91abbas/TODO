@@ -51,6 +51,9 @@ public class LastOpened extends JMenuItem implements ActionListener {
 	@SuppressWarnings("rawtypes")
 	public void add(String s) {
 		if (((DefaultComboBoxModel) c.getModel()).getIndexOf(s) == -1) {
+			if (c.getModel().getSize() > 9) {
+				c.removeItemAt(9);
+			}
 			c.insertItemAt(s, 0);
 		}
 	}
@@ -62,7 +65,7 @@ public class LastOpened extends JMenuItem implements ActionListener {
 			String filePath = prefs.get(id, "");
 			File file = new File(filePath);
 			if (filePath != null && !filePath.equals("") && file.exists())
-				add(filePath);
+				c.addItem(filePath);
 		}
 	}
 
@@ -77,19 +80,14 @@ public class LastOpened extends JMenuItem implements ActionListener {
 		}
 	}
 
-	public void addLastOpenedFiles() { // TODO not saving in the right order and limit the size to 10
+	public void addLastOpenedFiles() {
 		ComboBoxModel<String> model = c.getModel();
 		int size = model.getSize();
 		String id;
-		for (int i = 0 ; i < size; i++) {
-			int x = i / 10;
-			if(x != 0){
-				c.removeItemAt(i%10);
-			}
-			id = "ID" + Integer.toString(i%10);
-			Object element = model.getElementAt(i%10);
+		for (int i = 0; i < size; i++) {
+			id = "ID" + Integer.toString(i);
+			Object element = model.getElementAt(i);
 			prefs.put(id, (String) element);
-			
 		}
 	}
 
@@ -104,8 +102,10 @@ public class LastOpened extends JMenuItem implements ActionListener {
 		@SuppressWarnings("unchecked")
 		JComboBox<String> cb = (JComboBox<String>) e.getSource();
 		String filePath = (String) cb.getSelectedItem();
-
 		try {
+			c.removeItemAt(cb.getSelectedIndex());
+			c.insertItemAt(filePath, 0);
+			c.setSelectedIndex(0);
 			todo.save();
 			readFile(filePath);
 		} catch (Exception e1) {
