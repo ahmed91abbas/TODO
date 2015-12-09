@@ -69,10 +69,9 @@ public class ToDo extends JTable {
 		menu.add(lastOpened);
 		file.add(new OpenMenuItem(this));
 		file.add(new SaveAsMenuItem(this));
-		file.add(new NewFileMenuItem(this));// TODO Opens a new jchoosefile and
-		// creates a new file be4 opening
-		file.add(new DeleteFileMenuItem(this));
-		file.add(new RenameMenuItem(this));// TODO fix
+		file.add(new NewFileMenuItem(this));
+		file.add(new DeleteFileMenuItem(this));//TODO fix
+		file.add(new RenameMenuItem(this));
 		edit.add(new DeleteMenuItem(this));
 		edit.add(new DeleteAllMenuItem(this));
 		edit.add(new MarkAsUndone());
@@ -81,16 +80,10 @@ public class ToDo extends JTable {
 
 		JPanel panel = new JPanel();
 		JPanel panel2 = new JPanel();
-		// TODO fix scrolling and fit
-		// JScrollPane js = new JScrollPane(this);
-		// text to wedith
-		// js.setVisible(true);
-		// frame.add(js);
-
+		
 		JScrollPane sp = new JScrollPane(this,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		// frame.getContentPane().add(sp);
 		panel2.add(sp);
 
 		JButton New = new JButton("New");
@@ -125,14 +118,14 @@ public class ToDo extends JTable {
 			}
 		});
 
-//		setPreferredScrollableViewportSize(new Dimension(300, 200));
-//        setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-//        TableColumnAdjuster tca = new TableColumnAdjuster(this);
-//        tca.adjustColumns();
-		
-//		getColumnModel().getColumn(0).setPreferredWidth(600);
-//		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		
+		// setPreferredScrollableViewportSize(new Dimension(300, 200));
+		// setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		// TableColumnAdjuster tca = new TableColumnAdjuster(this);
+		// tca.adjustColumns();
+
+		// getColumnModel().getColumn(0).setPreferredWidth(600);
+		// setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
 		frame.add(panel2, BorderLayout.CENTER);
 		frame.add(panel, BorderLayout.PAGE_END);
 		frame.setPreferredSize(new Dimension(500, 500));
@@ -258,12 +251,10 @@ public class ToDo extends JTable {
 	// TODO creating a new file instead of saving to the original when the file
 	// is not placed on the defulet directory
 	private class saveAndClose implements ActionListener {
+
 		public void actionPerformed(ActionEvent e) {
 			File file = new File(fileName);
 			if (!file.exists()) {
-
-				System.out.println(fileName);
-				// TODO saveas
 				try {
 					createNewFile(file);
 					saveToFile();
@@ -332,13 +323,17 @@ public class ToDo extends JTable {
 	}
 
 	public void rename(String newName, boolean renameFile, boolean renameFrame)
-			throws IOException { // TODO add .txt to newFile only when renamed
-									// file is being saved
+			throws IOException {
+		if (newName.trim().equals(".txt") || newName.isEmpty()
+				|| newName.trim().equals("")) {
+			throw new java.io.IOException("Illegal file name. Renaming failed!");
+		}
 		if (renameFile) {
 			File oldFile = new File(fileName);
 			File newFile = new File(newName);
 			if (newFile.exists())
-				throw new java.io.IOException("file exists");
+				throw new java.io.IOException(
+						"A file with that name already exists");
 			oldFile.renameTo(newFile);
 			lastOpened.add(newFile.getAbsolutePath());
 		}
@@ -395,11 +390,6 @@ public class ToDo extends JTable {
 			if (filename.length() > 3
 					&& filename.substring(filename.length() - 4)
 							.equalsIgnoreCase(".txt")) {
-				if (filename.equals(".txt")
-						|| (Character.toString(filename.charAt(0)).equals(" "))) {
-					throw new FileNotFoundException(
-							" Illegal file name. Save aborted.");
-				}
 				print = new ToDoPrintStream(file.toString());
 			} else {
 
