@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
 
+import javax.swing.JOptionPane;
+
 public class ToDoBufferedReader extends BufferedReader {
 	private ToDo todo;
 	private File file;
@@ -30,8 +32,11 @@ public class ToDoBufferedReader extends BufferedReader {
 			todo.load(map);
 			todo.rename(file.getName(),false,true);
 		} catch (Exception e) {
+//			JOptionPane.showMessageDialog(null, e.getMessage(),
+//					"Obs...", JOptionPane.ERROR_MESSAGE);
+//			return;
 			e.printStackTrace();
-			return;
+			
 		}
 	}
 }

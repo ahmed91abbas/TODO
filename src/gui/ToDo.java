@@ -41,11 +41,11 @@ public class ToDo extends JTable {
 	private ToDoPrintStream print;
 
 	public ToDo() {
-		lastOpened = new LastOpened(this);
-		lastOpened.loadLastOpenedFiles();
 		file = new File("To do");
-		
 		frame = new JFrame(file.getName());
+		model = new DefaultTableModel();
+		lastOpened = new LastOpened(this);	
+		
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -68,9 +68,9 @@ public class ToDo extends JTable {
 		menu.add(help);// TODO add settings with shourtcut keys and about
 		menu.add(lastOpened);
 		file.add(new OpenMenuItem(this));
-		file.add(new SaveAsMenuItem(this));
-		file.add(new NewFileMenuItem(this));
-		file.add(new DeleteFileMenuItem(this));//TODO fix
+		file.add(new SaveAsMenuItem(this, lastOpened));
+		file.add(new NewFileMenuItem(this, lastOpened));
+		file.add(new DeleteFileMenuItem(this));// TODO fix
 		file.add(new RenameMenuItem(this));
 		edit.add(new DeleteMenuItem(this));
 		edit.add(new DeleteAllMenuItem(this));
@@ -80,10 +80,10 @@ public class ToDo extends JTable {
 
 		JPanel panel = new JPanel();
 		JPanel panel2 = new JPanel();
-		
+
 		JScrollPane sp = new JScrollPane(this,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); //TODO fix
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); // TODO fix
 		panel2.add(sp);
 
 		JButton New = new JButton("New");
@@ -105,7 +105,7 @@ public class ToDo extends JTable {
 		panel.setLayout(grid);
 		panel2.setLayout(grid2);
 
-		model = new DefaultTableModel();
+		
 		setModel(model);
 		setFont(new Font("Serif", Font.PLAIN, textSize));
 		model.addColumn(file.getName());
@@ -132,7 +132,7 @@ public class ToDo extends JTable {
 		frame.pack();
 		frame.setVisible(true);
 
-		lastOpened.openTheLastOpenedFile();
+		lastOpened.loadLastOpenedFiles();
 	}
 
 	private class NewListener implements ActionListener {
@@ -248,50 +248,52 @@ public class ToDo extends JTable {
 
 	}
 
-	// TODO creating a new file instead of saving to the original when the file
-	// is not placed on the defulet directory
 	private class saveAndClose implements ActionListener {
 
 		public void actionPerformed(ActionEvent e) {
 			if (!file.exists()) {
-				try {
-					createNewFile(file);
-					saveToFile();
-				} catch (FileNotFoundException e1) {
-					JOptionPane.showMessageDialog(null, e1.getMessage(),
-							"Obs...", JOptionPane.ERROR_MESSAGE);
+				String message = "Do you want to sava this file as: "
+						+ file.getAbsolutePath() + "?";
+
+				final String objButtons[] = { "Yes", "No", "Cancel" };
+				int option = JOptionPane.showOptionDialog(null, message,
+						"Obs...", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.WARNING_MESSAGE, null, objButtons,
+						objButtons[2]);
+				if (option == 0) {
+					try {
+						saveToFile(file);
+					} catch (FileNotFoundException e1) {
+						JOptionPane.showMessageDialog(null, e1.getMessage(),
+								"Obs...", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+				if (option == 2) {
+					return;
 				}
 			} else {
-				save();
+				try {
+					saveToFile(file);
+				} catch (FileNotFoundException e1) {
+					// JOptionPane.showMessageDialog(null, e1.getMessage(),
+					// "Obs...", JOptionPane.ERROR_MESSAGE);
+					// return;
+					e1.printStackTrace();
+				}
 			}
 			System.exit(0);
 		}
 	}
 
-	public void save() {
-		updateDatabase();
-		ToDoPrintStream print;
-		try {
-			print = new ToDoPrintStream(file.getName());
-			print.save(db.entrySet());
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		}
-		;
-		lastOpened.addLastOpenedFiles();
-	}
-
 	public void removeAll() {
-
 		int rows = model.getRowCount();
 		for (int i = rows - 1; i >= 0; i--) {
 			model.removeRow(i);
 			db.remove(i);
 		}
-
 	}
 
-	public void remove() { // TODO fix color adjustment
+	public void remove() { // TODO fix color adjustment when removing a row
 		try {
 			int row = getSelectedRow();
 			model.removeRow(row);
@@ -312,13 +314,20 @@ public class ToDo extends JTable {
 				JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
 				objButtons, objButtons[2]);
 		if (option == 0) {
-			save();
-			System.exit(0);
+			try {
+				saveToFile(file);
+			} catch (FileNotFoundException e1) {
+				// JOptionPane.showMessageDialog(null, e1.getMessage(),
+				// "Obs...", JOptionPane.ERROR_MESSAGE);
+				// return;
+				e1.printStackTrace();
+			}
+
 		}
-		if (option == 1) {
-			System.exit(0);
+		if (option == 2) {
+			return;
 		}
-		return;
+		System.exit(0);
 	}
 
 	public void rename(String newName, boolean renameFile, boolean renameFrame)
@@ -340,6 +349,7 @@ public class ToDo extends JTable {
 		}
 	}
 
+	// TODO creating a new file in default directory named To do when launchung and loading last opened file
 	public void load(Map<Integer, String> loadmap) {
 		db.clear();
 		removeAll();
@@ -360,22 +370,22 @@ public class ToDo extends JTable {
 		ToDoBufferedReader read = new ToDoBufferedReader(file.toString(), this);
 		try {
 			this.file = file;
-			lastOpened.add(file.toString());
 			read.load();
 			read.close();
+			lastOpened.add(file.getAbsolutePath());
 		} catch (Exception e) {
 			db.clear();
 		}
 	}
 
-	public void saveToFile() {
-		updateDatabase();
-		print.save(db.entrySet());
-		print.close();
+	// public void saveToFile() {
+	// updateDatabase();
+	// print.save(db.entrySet());
+	// print.close();
+	// lastOpened.addLastOpenedFiles();
+	// }
 
-	}
-
-	public void createNewFile(File file) throws FileNotFoundException {
+	public void saveToFile(File file) throws FileNotFoundException {
 		if (file != null) {
 			String filename = file.getName();
 			try {
@@ -393,12 +403,23 @@ public class ToDo extends JTable {
 
 				print = new ToDoPrintStream(file.toString() + ".txt");
 			}
+			updateDatabase();
+			print.save(db.entrySet());
+			print.close();
+			lastOpened.addLastOpenedFiles();
 		}
+	}
+
+	public File getCurrentFile() {
+		return file;
+	}
+
+	public void setCurrentFile(File file) {
+		this.file = file;
 	}
 
 	public static void main(String[] args) {
 		@SuppressWarnings("unused")
 		ToDo toDo = new ToDo();
 	}
-
 }

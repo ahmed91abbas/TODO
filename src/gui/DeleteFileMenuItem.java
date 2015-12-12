@@ -23,8 +23,9 @@ public class DeleteFileMenuItem extends FileMenu {
 			file.createNewFile();
 			file.delete();
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Something went wrong while deleting the file!", "Obs",
-					JOptionPane.INFORMATION_MESSAGE);
+//			JOptionPane.showMessageDialog(null, "Something went wrong while deleting the file!", "Obs",
+//					JOptionPane.INFORMATION_MESSAGE);
+			e.printStackTrace();
 		}
 		
 	}

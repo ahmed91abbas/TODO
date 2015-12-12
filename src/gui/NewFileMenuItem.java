@@ -8,17 +8,24 @@ import javax.swing.JFileChooser;
 @SuppressWarnings("serial")
 public class NewFileMenuItem extends FileMenu{
 	private ToDo todo;
+	private LastOpened lastOpened;
 	
-	public NewFileMenuItem(ToDo todo){
+	public NewFileMenuItem(ToDo todo, LastOpened lastOpened){
 		super(todo,"New list");
 		this.todo = todo;
+		this.lastOpened = lastOpened;
 	}
 
 	@Override
 	protected void action(File file) throws FileNotFoundException {
-		todo.save();
+		todo.saveToFile(todo.getCurrentFile());
 		todo.removeAll();
-		todo.createNewFile(file);
+		String path = file.getAbsolutePath();
+		if(!path.substring(path.length()-5).equalsIgnoreCase(".txt")){
+			file = new File(path+".txt");
+		}
+		todo.setCurrentFile(file);
+		lastOpened.add(file.getAbsolutePath());
 	}
 
 	@Override

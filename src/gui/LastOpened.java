@@ -11,6 +11,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 @SuppressWarnings("serial")
 public class LastOpened extends JMenuItem implements ActionListener {
@@ -50,12 +51,17 @@ public class LastOpened extends JMenuItem implements ActionListener {
 
 	@SuppressWarnings("rawtypes")
 	public void add(String s) {
-		if (((DefaultComboBoxModel) c.getModel()).getIndexOf(s) == -1) {
+		int index = ((DefaultComboBoxModel) c.getModel()).getIndexOf(s);
+		if (index == -1) {
 			if (c.getModel().getSize() > 9) {
 				c.removeItemAt(9);
 			}
 			c.insertItemAt(s, 0);
+		} else if(index != 0) {
+			c.removeItemAt(index);
+			c.insertItemAt(s, 0);
 		}
+		 c.setSelectedIndex(0);
 	}
 
 	public void loadLastOpenedFiles() {
@@ -64,12 +70,14 @@ public class LastOpened extends JMenuItem implements ActionListener {
 			id = "ID" + Integer.toString(i);
 			String filePath = prefs.get(id, "");
 			File file = new File(filePath);
-			if (filePath != null && !filePath.equals("") && file.exists())
+			if (filePath != null && !filePath.equals("") && file.exists()) {
 				c.addItem(filePath);
+			}
 		}
+		openTheLastOpenedFile();
 	}
 
-	public void openTheLastOpenedFile() {
+	private void openTheLastOpenedFile() {
 		String filePath = prefs.get("ID0", "");
 		if (filePath != null && !filePath.equals("")) {
 			try {
@@ -92,10 +100,14 @@ public class LastOpened extends JMenuItem implements ActionListener {
 	}
 
 	private void readFile(String filePath) throws IOException {
-		ToDoBufferedReader read = new ToDoBufferedReader(filePath, todo);
-		read.load();
-		read.close();
-		throw new IOException("Couldn't open the file!");
+		try {
+			ToDoBufferedReader read = new ToDoBufferedReader(filePath, todo);
+			read.load();
+			read.close();
+			todo.setCurrentFile(new File(filePath));
+		} catch (Exception e) {
+			throw new IOException("Couldn't open the file!");
+		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -103,13 +115,19 @@ public class LastOpened extends JMenuItem implements ActionListener {
 		JComboBox<String> cb = (JComboBox<String>) e.getSource();
 		String filePath = (String) cb.getSelectedItem();
 		try {
+			if(cb.getSelectedIndex() != -1){
+			todo.saveToFile(todo.getCurrentFile());
 			c.removeItemAt(cb.getSelectedIndex());
 			c.insertItemAt(filePath, 0);
 			c.setSelectedIndex(0);
-			todo.save();
 			readFile(filePath);
+			}
 		} catch (Exception e1) {
-			return;
+			// JOptionPane.showMessageDialog(null, e1.getMessage(),
+			// "Obs...", JOptionPane.ERROR_MESSAGE);
+			// return;
+			e1.printStackTrace();
 		}
 	}
+
 }

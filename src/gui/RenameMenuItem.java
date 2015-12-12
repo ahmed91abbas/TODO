@@ -31,8 +31,9 @@ public class RenameMenuItem extends JMenuItem implements ActionListener {
 					todo.rename(fileName + ".txt", true, true);
 				}
 			} catch (IOException e) {
-				JOptionPane.showMessageDialog(null, e.getMessage(), "Obs...",
-						JOptionPane.ERROR_MESSAGE);
+//				JOptionPane.showMessageDialog(null, e.getMessage(), "Obs...",
+//						JOptionPane.ERROR_MESSAGE);
+				e.printStackTrace();
 			}
 		}
 	}
