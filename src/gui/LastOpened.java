@@ -116,6 +116,7 @@ public class LastOpened extends JMenuItem implements ActionListener {
 		String filePath = (String) cb.getSelectedItem();
 		try {
 			if(cb.getSelectedIndex() != -1){
+				if(todo.getCurrentFile().exists())
 			todo.saveToFile(todo.getCurrentFile());
 			c.removeItemAt(cb.getSelectedIndex());
 			c.insertItemAt(filePath, 0);

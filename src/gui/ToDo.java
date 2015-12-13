@@ -69,7 +69,7 @@ public class ToDo extends JTable {
 		file.add(new OpenMenuItem(this));
 		file.add(new SaveAsMenuItem(this, lastOpened));
 		file.add(new NewFileMenuItem(this, lastOpened));
-		file.add(new DeleteFileMenuItem(this));// TODO fix
+		file.add(new DeleteFileMenuItem(this));// TODO fix change so it happens with no filechooser
 		file.add(new RenameMenuItem(this));
 		edit.add(new DeleteMenuItem(this));
 		edit.add(new DeleteAllMenuItem(this));
@@ -122,7 +122,7 @@ public class ToDo extends JTable {
 		frame.pack();
 		frame.setVisible(true);
 
-		lastOpened.loadLastOpenedFiles();
+		lastOpened.loadLastOpenedFiles(); //TODO still creating a new file "ToDo.txt"
 	}
 
 	private class NewListener implements ActionListener {
@@ -300,6 +300,7 @@ public class ToDo extends JTable {
 		} catch (NullPointerException e) {
 			return;
 		}
+		fixTableHightAndWidth();
 	}
 
 	private void onExit() {

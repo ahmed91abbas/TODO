@@ -15,7 +15,6 @@ public DeleteMenuItem(ToDo todo){
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		todo.remove();
-		
 	}
 
 }
