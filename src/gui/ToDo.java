@@ -69,7 +69,7 @@ public class ToDo extends JTable {
 		file.add(new OpenMenuItem(this));
 		file.add(new SaveAsMenuItem(this, lastOpened));
 		file.add(new NewFileMenuItem(this, lastOpened));
-		file.add(new DeleteFileMenuItem(this));// TODO fix change so it happens with no filechooser
+		file.add(new DeleteFileMenuItem(this));
 		file.add(new RenameMenuItem(this));
 		edit.add(new DeleteMenuItem(this));
 		edit.add(new DeleteAllMenuItem(this));
