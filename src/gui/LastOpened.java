@@ -123,10 +123,9 @@ public class LastOpened extends JMenuItem implements ActionListener {
 			readFile(filePath);
 			}
 		} catch (Exception e1) {
-			// JOptionPane.showMessageDialog(null, e1.getMessage(),
-			// "Obs...", JOptionPane.ERROR_MESSAGE);
-			// return;
-			e1.printStackTrace();
+			 JOptionPane.showMessageDialog(null, e1.getMessage(),
+			 "Obs...", JOptionPane.ERROR_MESSAGE);
+			 return;
 		}
 	}
 

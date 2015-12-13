@@ -4,14 +4,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import javax.swing.JFileChooser;
 
-
 @SuppressWarnings("serial")
-public class NewFileMenuItem extends FileMenu{
+public class NewFileMenuItem extends FileMenu {
 	private ToDo todo;
 	private LastOpened lastOpened;
-	
-	public NewFileMenuItem(ToDo todo, LastOpened lastOpened){
-		super(todo,"New list");
+
+	public NewFileMenuItem(ToDo todo, LastOpened lastOpened) {
+		super(todo, "New list");
 		this.todo = todo;
 		this.lastOpened = lastOpened;
 	}
@@ -21,8 +20,8 @@ public class NewFileMenuItem extends FileMenu{
 		todo.saveToFile(todo.getCurrentFile());
 		todo.removeAll();
 		String path = file.getAbsolutePath();
-		if(!path.substring(path.length()-5).equalsIgnoreCase(".txt")){
-			file = new File(path+".txt");
+		if (!path.substring(path.length() - 5).equalsIgnoreCase(".txt")) {
+			file = new File(path + ".txt");
 		}
 		todo.setCurrentFile(file);
 		lastOpened.add(file.getAbsolutePath());
@@ -33,6 +32,5 @@ public class NewFileMenuItem extends FileMenu{
 		fileChooser.setApproveButtonText("Create");
 		return fileChooser.showOpenDialog(todo);
 	}
-	
 
 }

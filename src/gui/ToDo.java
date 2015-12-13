@@ -13,9 +13,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
+import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -32,7 +30,7 @@ import javax.swing.table.TableCellRenderer;
 
 @SuppressWarnings("serial")
 public class ToDo extends JTable {
-	Map<Integer, String> db = new HashMap<Integer, String>();
+	private ArrayList<String> db;
 	private JFrame frame;
 	private DefaultTableModel model;
 	private File file;
@@ -41,11 +39,12 @@ public class ToDo extends JTable {
 	private ToDoPrintStream print;
 
 	public ToDo() {
-		file = new File("To do");
+		db = new ArrayList<String>();
+		file = new File("ToDo");
 		frame = new JFrame(file.getName());
 		model = new DefaultTableModel();
-		lastOpened = new LastOpened(this);	
-		
+		lastOpened = new LastOpened(this);
+
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -83,7 +82,7 @@ public class ToDo extends JTable {
 
 		JScrollPane sp = new JScrollPane(this,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); // TODO fix
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		panel2.add(sp);
 
 		JButton New = new JButton("New");
@@ -105,7 +104,6 @@ public class ToDo extends JTable {
 		panel.setLayout(grid);
 		panel2.setLayout(grid2);
 
-		
 		setModel(model);
 		setFont(new Font("Serif", Font.PLAIN, textSize));
 		model.addColumn(file.getName());
@@ -114,17 +112,9 @@ public class ToDo extends JTable {
 		getModel().addTableModelListener(new TableModelListener() {
 
 			public void tableChanged(TableModelEvent e) {
-				fixRowHight();
+				fixTableHightAndWidth();
 			}
 		});
-
-		// setPreferredScrollableViewportSize(new Dimension(300, 200));
-		// setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		// TableColumnAdjuster tca = new TableColumnAdjuster(this);
-		// tca.adjustColumns();
-
-		// getColumnModel().getColumn(0).setPreferredWidth(600);
-		// setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 		frame.add(panel2, BorderLayout.CENTER);
 		frame.add(panel, BorderLayout.PAGE_END);
@@ -142,8 +132,8 @@ public class ToDo extends JTable {
 			if (s != null) {
 				model.addRow(new Object[] { s });
 				int lastRow = convertRowIndexToView(model.getRowCount() - 1);
-				db.put(lastRow, s);
-				fixRowHight();
+				db.add(lastRow, s);
+				fixTableHightAndWidth();
 			}
 		}
 	}
@@ -151,25 +141,29 @@ public class ToDo extends JTable {
 	public void setTextSize(int textSize) {
 		this.textSize = textSize;
 		setFont(new Font("Serif", Font.PLAIN, textSize));
-		fixRowHight();
+		fixTableHightAndWidth();
 	}
 
-	private void fixRowHight() {
+	private void fixTableHightAndWidth() {
+			int width = frame.getWidth() - 21;
 		for (int row = 0; row < getRowCount(); row++) {
 			int rowHeight = getRowHeight();
 			Component comp = prepareRenderer(getCellRenderer(row, 0), row, 0);
 			rowHeight = Math.max(rowHeight, comp.getPreferredSize().height);
 			setRowHeight(row, rowHeight);
+			width = Math.max(width, comp.getPreferredSize().width);
 		}
+		getColumnModel().getColumn(0).setPreferredWidth(width + 2);
+		setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 	}
 
 	private void updateDatabase() {
 		for (int row = 0; row < model.getRowCount(); row++) {
 			String s = (String) model.getValueAt(row, 0);
 			if (isDone(row)) {
-				db.put(row, s + "#done");
+				db.set(row, s + "#done");
 			} else {
-				db.put(row, s);
+				db.set(row, s);
 			}
 		}
 	}
@@ -177,8 +171,8 @@ public class ToDo extends JTable {
 	@Override
 	public Component prepareRenderer(TableCellRenderer renderer, int row,
 			int column) {
+		try{
 		Component c = super.prepareRenderer(renderer, row, column);
-
 		if (!isRowSelected(row)) {
 			Color color;
 			if (isDone(row)) {
@@ -188,19 +182,22 @@ public class ToDo extends JTable {
 			}
 			c.setBackground(color == null ? getBackground() : color);
 		}
-
-		return c;
+		return c;}
+		catch(Exception e){
+			return null;
+		}
 	}
 
 	private boolean isDone(int row) {
 		String s = "";
 		try {
 			s = db.get(row);
-			if (s.length() > 5
+			if (s.length() >= 5
 					&& s.substring(s.length() - 5).equalsIgnoreCase("#done")) {
 				return true;
 			}
-		} catch (NullPointerException e) {
+		} 
+		catch (Exception e) {
 			return false;
 		}
 		return false;
@@ -211,7 +208,7 @@ public class ToDo extends JTable {
 			int row = getSelectedRow();
 			if (row != -1) {
 				String s = db.get(row);
-				db.put(row, s + "#done");
+				db.set(row, s + "#done");
 			}
 			model.fireTableRowsUpdated(row, row);
 		}
@@ -229,7 +226,7 @@ public class ToDo extends JTable {
 			if (isDone(row)) {
 				String s = db.get(row);
 				s = s.substring(0, s.length() - 6);
-				db.put(row, s);
+				db.set(row, s);
 			}
 		}
 
@@ -275,10 +272,9 @@ public class ToDo extends JTable {
 				try {
 					saveToFile(file);
 				} catch (FileNotFoundException e1) {
-					// JOptionPane.showMessageDialog(null, e1.getMessage(),
-					// "Obs...", JOptionPane.ERROR_MESSAGE);
-					// return;
-					e1.printStackTrace();
+					 JOptionPane.showMessageDialog(null, e1.getMessage(),
+					 "Obs...", JOptionPane.ERROR_MESSAGE);
+					 return;
 				}
 			}
 			System.exit(0);
@@ -289,11 +285,11 @@ public class ToDo extends JTable {
 		int rows = model.getRowCount();
 		for (int i = rows - 1; i >= 0; i--) {
 			model.removeRow(i);
-			db.remove(i);
 		}
+		db.clear();
 	}
 
-	public void remove() { // TODO fix color adjustment when removing a row
+	public void remove() { 
 		try {
 			int row = getSelectedRow();
 			model.removeRow(row);
@@ -317,10 +313,9 @@ public class ToDo extends JTable {
 			try {
 				saveToFile(file);
 			} catch (FileNotFoundException e1) {
-				// JOptionPane.showMessageDialog(null, e1.getMessage(),
-				// "Obs...", JOptionPane.ERROR_MESSAGE);
-				// return;
-				e1.printStackTrace();
+				 JOptionPane.showMessageDialog(null, e1.getMessage(),
+				 "Obs...", JOptionPane.ERROR_MESSAGE);
+				 return;
 			}
 
 		}
@@ -349,21 +344,19 @@ public class ToDo extends JTable {
 		}
 	}
 
-	// TODO creating a new file in default directory named To do when launchung and loading last opened file
-	public void load(Map<Integer, String> loadmap) {
+	public void load(ArrayList<String> loadList) {
 		db.clear();
 		removeAll();
-		db.putAll(loadmap);
+		db = new ArrayList<String>(loadList);
 		for (int i = 0; i < db.size(); i++) {
 			String s = db.get(i);
 			if (s.length() > 5
 					&& s.substring(s.length() - 5).equalsIgnoreCase("#done")) {
 				s = s.substring(0, s.length() - 5);
-
 			}
 			model.addRow(new Object[] { s });
 		}
-		fixRowHight();
+		fixTableHightAndWidth();
 	}
 
 	public void loadFromFile(File file) throws FileNotFoundException {
@@ -377,13 +370,6 @@ public class ToDo extends JTable {
 			db.clear();
 		}
 	}
-
-	// public void saveToFile() {
-	// updateDatabase();
-	// print.save(db.entrySet());
-	// print.close();
-	// lastOpened.addLastOpenedFiles();
-	// }
 
 	public void saveToFile(File file) throws FileNotFoundException {
 		if (file != null) {
@@ -404,7 +390,7 @@ public class ToDo extends JTable {
 				print = new ToDoPrintStream(file.toString() + ".txt");
 			}
 			updateDatabase();
-			print.save(db.entrySet());
+			print.save(db);
 			print.close();
 			lastOpened.addLastOpenedFiles();
 		}
