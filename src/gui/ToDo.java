@@ -122,7 +122,7 @@ public class ToDo extends JTable {
 		frame.pack();
 		frame.setVisible(true);
 
-		lastOpened.loadLastOpenedFiles(); //TODO still creating a new file "ToDo.txt"
+		lastOpened.loadLastOpenedFiles();
 	}
 
 	private class NewListener implements ActionListener {
