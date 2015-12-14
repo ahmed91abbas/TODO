@@ -9,11 +9,15 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.awt.Point;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -29,7 +33,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 @SuppressWarnings("serial")
-public class ToDo extends JTable {
+public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	private ArrayList<String> db;
 	private JFrame frame;
 	private DefaultTableModel model;
@@ -37,6 +41,8 @@ public class ToDo extends JTable {
 	private int textSize = 25;
 	private LastOpened lastOpened;
 	private ToDoPrintStream print;
+	private String tempRowContent;
+	private int tempRowIndex,indexMousePressed;
 
 	public ToDo() {
 		db = new ArrayList<String>();
@@ -116,6 +122,10 @@ public class ToDo extends JTable {
 			}
 		});
 
+		setRowSelectionAllowed(false);
+		addMouseListener(this);
+		addMouseMotionListener(this);
+
 		frame.add(panel2, BorderLayout.CENTER);
 		frame.add(panel, BorderLayout.PAGE_END);
 		frame.setPreferredSize(new Dimension(500, 500));
@@ -145,7 +155,7 @@ public class ToDo extends JTable {
 	}
 
 	private void fixTableHightAndWidth() {
-			int width = frame.getWidth() - 21;
+		int width = frame.getWidth() - 21;
 		for (int row = 0; row < getRowCount(); row++) {
 			int rowHeight = getRowHeight();
 			Component comp = prepareRenderer(getCellRenderer(row, 0), row, 0);
@@ -171,19 +181,19 @@ public class ToDo extends JTable {
 	@Override
 	public Component prepareRenderer(TableCellRenderer renderer, int row,
 			int column) {
-		try{
-		Component c = super.prepareRenderer(renderer, row, column);
-		if (!isRowSelected(row)) {
-			Color color;
-			if (isDone(row)) {
-				color = Color.GREEN;
-			} else {
-				color = Color.WHITE;
+		try {
+			Component c = super.prepareRenderer(renderer, row, column);
+			if (!isRowSelected(row)) {
+				Color color;
+				if (isDone(row)) {
+					color = Color.GREEN;
+				} else {
+					color = Color.WHITE;
+				}
+				c.setBackground(color == null ? getBackground() : color);
 			}
-			c.setBackground(color == null ? getBackground() : color);
-		}
-		return c;}
-		catch(Exception e){
+			return c;
+		} catch (Exception e) {
 			return null;
 		}
 	}
@@ -196,8 +206,7 @@ public class ToDo extends JTable {
 					&& s.substring(s.length() - 5).equalsIgnoreCase("#done")) {
 				return true;
 			}
-		} 
-		catch (Exception e) {
+		} catch (Exception e) {
 			return false;
 		}
 		return false;
@@ -272,9 +281,9 @@ public class ToDo extends JTable {
 				try {
 					saveToFile(file);
 				} catch (FileNotFoundException e1) {
-					 JOptionPane.showMessageDialog(null, e1.getMessage(),
-					 "Obs...", JOptionPane.ERROR_MESSAGE);
-					 return;
+					JOptionPane.showMessageDialog(null, e1.getMessage(),
+							"Obs...", JOptionPane.ERROR_MESSAGE);
+					return;
 				}
 			}
 			System.exit(0);
@@ -289,7 +298,7 @@ public class ToDo extends JTable {
 		db.clear();
 	}
 
-	public void remove() { 
+	public void remove() {
 		try {
 			int row = getSelectedRow();
 			model.removeRow(row);
@@ -314,9 +323,9 @@ public class ToDo extends JTable {
 			try {
 				saveToFile(file);
 			} catch (FileNotFoundException e1) {
-				 JOptionPane.showMessageDialog(null, e1.getMessage(),
-				 "Obs...", JOptionPane.ERROR_MESSAGE);
-				 return;
+				JOptionPane.showMessageDialog(null, e1.getMessage(), "Obs...",
+						JOptionPane.ERROR_MESSAGE);
+				return;
 			}
 
 		}
@@ -403,6 +412,63 @@ public class ToDo extends JTable {
 
 	public void setCurrentFile(File file) {
 		this.file = file;
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent event) {
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		setRowSelectionAllowed(false);
+		Point point = e.getPoint();
+		int row = rowAtPoint(point);
+		if (row >= 0 && row < model.getRowCount()) {
+			tempRowContent = (String) model.getValueAt(row, 0);
+			tempRowIndex = indexMousePressed = row;
+			
+		}
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) { //TODO not updating until next press
+		Point point = e.getPoint();
+		int row = rowAtPoint(point);
+		if(row == indexMousePressed)
+		setRowSelectionAllowed(true);
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		Point point = e.getPoint();
+		int row = rowAtPoint(point);
+		if (row >= 0 && row < model.getRowCount() && row != tempRowIndex) {
+			model.removeRow(tempRowIndex);
+			model.insertRow(row, new Object[] { tempRowContent });
+
+			if (isDone(tempRowIndex)) {
+				db.remove(tempRowIndex);
+				db.add(row, tempRowContent + "#done");
+			} else {
+				db.remove(tempRowIndex);
+				db.add(row, tempRowContent);
+			}
+			model.fireTableRowsUpdated(row, row);
+			tempRowIndex = row;
+		}
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+
 	}
 
 	public static void main(String[] args) {
