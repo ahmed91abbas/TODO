@@ -42,7 +42,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	private LastOpened lastOpened;
 	private ToDoPrintStream print;
 	private String tempRowContent;
-	private int tempRowIndex,indexMousePressed;
+	private int tempRowIndex, indexMousePressed;
 
 	public ToDo() {
 		db = new ArrayList<String>();
@@ -70,7 +70,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		JMenu help = new JMenu("Help");
 		menu.add(file);
 		menu.add(edit);
-		menu.add(help);// TODO add settings with shourtcut keys and about
+		menu.add(help);
 		menu.add(lastOpened);
 		file.add(new OpenMenuItem(this));
 		file.add(new SaveAsMenuItem(this, lastOpened));
@@ -79,9 +79,11 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		file.add(new RenameMenuItem(this));
 		edit.add(new DeleteMenuItem(this));
 		edit.add(new DeleteAllMenuItem(this));
-		edit.add(new MarkAsUndone());
 		edit.add(new ChangeTextSize(this));
 		edit.add(new ClearLastOpened());
+		help.add(new PreferencesMenuItem());//TODO implement
+		help.add(new GuideMenuItem());//TODO implement
+		help.add(new AboutMenuItem());//TODO implement
 
 		JPanel panel = new JPanel();
 		JPanel panel2 = new JPanel();
@@ -100,7 +102,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		JButton saveAndClose = new JButton("Save and close");
 		saveAndClose.addActionListener(new saveAndClose());
 		panel.add(saveAndClose);
-		JButton done = new JButton("Mark as done");
+		JButton done = new JButton("Mark as done/undone");
 		done.addActionListener(new doneListener());
 		panel.add(done);
 
@@ -215,30 +217,20 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	private class doneListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			int row = getSelectedRow();
-			if (row != -1) {
-				String s = db.get(row);
-				db.set(row, s + "#done");
-			}
-			model.fireTableRowsUpdated(row, row);
+			changeTaskState(row);
 		}
 	}
 
-	private class MarkAsUndone extends JMenuItem implements ActionListener {
-		public MarkAsUndone() {
-			super("Mark as undone");
-			addActionListener(this);
-		}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			int row = getSelectedRow();
-			if (isDone(row)) {
-				String s = db.get(row);
-				s = s.substring(0, s.length() - 6);
-				db.set(row, s);
+	private void changeTaskState(int row){
+		if(isDone(row)){
+			String s = db.get(row);
+			s = s.substring(0, s.length() - 5);
+			db.set(row, s);
 			}
+		else if (row != -1) {
+				String s = db.get(row);
+				db.set(row, s + "#done");		
 		}
-
 	}
 
 	private class ClearLastOpened extends JMenuItem implements ActionListener {
@@ -431,38 +423,49 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		setRowSelectionAllowed(false);
 		Point point = e.getPoint();
 		int row = rowAtPoint(point);
+		
+		int mouseButton = e.getButton();
+		if(mouseButton == MouseEvent.BUTTON3){
+			changeTaskState(row);
+		}
+		
 		if (row >= 0 && row < model.getRowCount()) {
 			tempRowContent = (String) model.getValueAt(row, 0);
 			tempRowIndex = indexMousePressed = row;
-			
 		}
 	}
 
 	@Override
-	public void mouseReleased(MouseEvent e) { //TODO not updating until next press
+	public void mouseReleased(MouseEvent e) {
 		Point point = e.getPoint();
 		int row = rowAtPoint(point);
-		if(row == indexMousePressed)
-		setRowSelectionAllowed(true);
+		if (row == indexMousePressed)
+			setRowSelectionAllowed(true);
+		
+		changeSelection(0, 0, false, false);
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		Point point = e.getPoint();
-		int row = rowAtPoint(point);
-		if (row >= 0 && row < model.getRowCount() && row != tempRowIndex) {
-			model.removeRow(tempRowIndex);
-			model.insertRow(row, new Object[] { tempRowContent });
+		int mouseButton = e.getModifiers();
+		if (mouseButton == MouseEvent.BUTTON1
+				|| mouseButton == MouseEvent.BUTTON1_MASK) {
+			Point point = e.getPoint();
+			int row = rowAtPoint(point);
+			if (row >= 0 && row < model.getRowCount() && row != tempRowIndex) {
+				model.removeRow(tempRowIndex);
+				model.insertRow(row, new Object[] { tempRowContent });
 
-			if (isDone(tempRowIndex)) {
-				db.remove(tempRowIndex);
-				db.add(row, tempRowContent + "#done");
-			} else {
-				db.remove(tempRowIndex);
-				db.add(row, tempRowContent);
+				if (isDone(tempRowIndex)) {
+					db.remove(tempRowIndex);
+					db.add(row, tempRowContent + "#done");
+				} else {
+					db.remove(tempRowIndex);
+					db.add(row, tempRowContent);
+				}
+				model.fireTableRowsUpdated(row, row);
+				tempRowIndex = row;
 			}
-			model.fireTableRowsUpdated(row, row);
-			tempRowIndex = row;
 		}
 	}
 
