@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 @SuppressWarnings("serial")
 public class PreferencesMenuItem extends JMenuItem implements ActionListener{
@@ -15,7 +16,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		
+		JOptionPane.showMessageDialog(null, "This option will be available in the next release", "Obs",
+				JOptionPane.INFORMATION_MESSAGE);
 	}
 }

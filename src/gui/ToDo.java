@@ -81,9 +81,8 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		edit.add(new DeleteAllMenuItem(this));
 		edit.add(new ChangeTextSize(this));
 		edit.add(new ClearLastOpened());
-		help.add(new PreferencesMenuItem());//TODO implement
-		help.add(new GuideMenuItem());//TODO implement
-		help.add(new AboutMenuItem());//TODO implement
+		help.add(new PreferencesMenuItem());
+		help.add(new AboutMenuItem());
 
 		JPanel panel = new JPanel();
 		JPanel panel2 = new JPanel();
@@ -439,12 +438,12 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	public void mouseReleased(MouseEvent e) {
 		Point point = e.getPoint();
 		int row = rowAtPoint(point);
-		if (row == indexMousePressed)
-			setRowSelectionAllowed(true);
-		
 		changeSelection(0, 0, false, false);
+		if (row == indexMousePressed){
+			setRowSelectionAllowed(true);
+			changeSelection(row, 0, false, false);
 	}
-
+	}
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		int mouseButton = e.getModifiers();
