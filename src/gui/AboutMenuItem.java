@@ -26,12 +26,13 @@ public class AboutMenuItem extends JMenuItem implements ActionListener {
 		jta.setEditable(false);
 		jta.setLineWrap(true);
 
-		jta.append("\n Version 1.1");
-		jta.append("\n\nTime of release: December 2015");
+		jta.append("\n Version 1.2");
+		jta.append("\n\nDate of release: December 2015");
 		jta.append("\n\nIf you have any suggestions or if you want to leave a feedback feel free to contact me:\nEmail: snipeeeeer@gmail.com");
 
 		frame.add(jta);
-		frame.setPreferredSize(new Dimension(300, 250));
+		frame.setPreferredSize(new Dimension(280, 250));
+		frame.setResizable(false);
 		frame.pack();
 		frame.setVisible(true);
 	}

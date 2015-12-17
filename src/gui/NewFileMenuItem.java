@@ -2,6 +2,7 @@ package gui;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+
 import javax.swing.JFileChooser;
 
 @SuppressWarnings("serial")
@@ -20,10 +21,11 @@ public class NewFileMenuItem extends FileMenu {
 		todo.saveToFile(todo.getCurrentFile());
 		todo.removeAll();
 		String path = file.getAbsolutePath();
-		if (!path.substring(path.length() - 5).equalsIgnoreCase(".txt")) {
+		if (!path.substring(path.length() - 4).equalsIgnoreCase(".txt")) {
 			file = new File(path + ".txt");
 		}
 		todo.setCurrentFile(file);
+		todo.saveToFile(file);
 		lastOpened.add(file.getAbsolutePath());
 	}
 

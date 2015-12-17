@@ -43,6 +43,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	private ToDoPrintStream print;
 	private String tempRowContent;
 	private int tempRowIndex, indexMousePressed;
+	
 
 	public ToDo() {
 		db = new ArrayList<String>();
@@ -132,7 +133,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		frame.setPreferredSize(new Dimension(500, 500));
 		frame.pack();
 		frame.setVisible(true);
-
+		
 		lastOpened.loadLastOpenedFiles();
 	}
 
