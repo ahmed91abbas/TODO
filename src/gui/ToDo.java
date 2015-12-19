@@ -40,6 +40,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	private File file;
 	private int textSize = 25;
 	private LastOpened lastOpened;
+	private PreferencesMenuItem pref;
 	private ToDoPrintStream print;
 	private String tempRowContent;
 	private int tempRowIndex, indexMousePressed;
@@ -48,9 +49,11 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	public ToDo() {
 		db = new ArrayList<String>();
 		file = new File("ToDo");
+		pref = new PreferencesMenuItem();
 		frame = new JFrame(file.getName());
 		model = new DefaultTableModel();
 		lastOpened = new LastOpened(this);
+		
 
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
@@ -82,7 +85,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		edit.add(new DeleteAllMenuItem(this));
 		edit.add(new ChangeTextSize(this));
 		edit.add(new ClearLastOpened());
-		help.add(new PreferencesMenuItem());
+		help.add(pref);
 		help.add(new AboutMenuItem());
 
 		JPanel panel = new JPanel();
@@ -188,7 +191,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 			if (!isRowSelected(row)) {
 				Color color;
 				if (isDone(row)) {
-					color = Color.GREEN;
+					color = pref.getMarkingColor();
 				} else {
 					color = Color.WHITE;
 				}
