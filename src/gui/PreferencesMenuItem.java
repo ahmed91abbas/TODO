@@ -25,6 +25,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		AdjustmentListener {
 
 	private JFrame frame;
+	private ToDo todo;
 	private JPanel textColorPanel;
 	private JPanel markingColorPanel;
 	private JTextArea text;
@@ -49,8 +50,9 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 	final static String C5 = "sbar5";
 	final static String C6 = "sbar6";
 
-	public PreferencesMenuItem() {
+	public PreferencesMenuItem(ToDo todo) {
 		super("Preferences");
+		this.todo = todo;
 		prefs = Preferences.userRoot().node(this.getClass().getName());
 		try{
 		textColor = new Color(prefs.getInt("C1", 0), prefs.getInt("C2", 0), prefs.getInt("C3", 0));
@@ -61,6 +63,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 			markingColor = DEFAULT_MARKING_COLOR;
 			textSize = DEFAULT_TEXT_SIZE;
 		}
+//		showInGUI(); //TODO fix so that values load on start up
 		addActionListener(this);
 	}
 
@@ -69,6 +72,12 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 	 
 //TODO prefent mouse click on main gui when this one is open
 	
+	private void showInGUI() {
+		todo.setForeground(textColor);
+		todo.setTextSize(textSize);
+	}
+
+
 	private void init() {
 		frame = new JFrame("Preferences");
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -79,7 +88,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		jta.setFont(font);
 		jta.setText("Set default text size:");
 		jta.setEditable(false);
-		text = new JTextArea(10,10);
+		text = new JTextArea();
 		text.setText(Integer.toString(prefs.getInt("C0", 0)));
 		GridLayout grid = new GridLayout(1, 2);
 
@@ -91,7 +100,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		panel.setLayout(grid);
 		panel.add(jta);
 		panel.add(text);
-		panel.setBounds(0, 10, 400, 25);
+		panel.setBounds(0, 10, 350, 25);
 		frame.add(panel);
 
 		JPanel buttons = new JPanel();
@@ -176,6 +185,8 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 
 		public void actionPerformed(ActionEvent e) {
 			textSize = DEFAULT_TEXT_SIZE;
+			prefs.putInt("C0", textSize);
+			text.setText(Integer.toString(textSize));
 			textColor = DEFAULT_TEXT_COLOR;
 			markingColor = DEFAULT_MARKING_COLOR;
 			sbar1.setValue(DEFAULT_TEXT_COLOR.getRed());
@@ -210,6 +221,8 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 			
 			textColor = textColorPanel.getBackground();
 			markingColor = markingColorPanel.getBackground();
+			showInGUI();
+	
 			frame.setVisible(false);
 			frame.dispose();
 		}
@@ -222,17 +235,11 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		}
 	}
 
-	public Color getTextColor() {
-		return textColor;
-	}
-
 	public Color getMarkingColor() {
 		return markingColor;
 	}
 
-	public int getTextSize() {
-		return textSize == 0 ? DEFAULT_TEXT_SIZE : textSize;
-	}
+	
 
 	@Override
 	public void actionPerformed(ActionEvent e) {

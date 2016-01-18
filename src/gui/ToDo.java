@@ -47,14 +47,15 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	
 
 	public ToDo() {
+		
 		db = new ArrayList<String>();
 		file = new File("ToDo");
-		pref = new PreferencesMenuItem();
 		frame = new JFrame(file.getName());
 		model = new DefaultTableModel();
 		lastOpened = new LastOpened(this);
+		pref = new PreferencesMenuItem(this);
 		
-
+		
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -151,7 +152,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 			}
 		}
 	}
-
+//TODO don't allow indata to be not integer in pref and setTextSize classes
 	public void setTextSize(int textSize) {
 		this.textSize = textSize;
 		setFont(new Font("Serif", Font.PLAIN, textSize));
@@ -185,7 +186,6 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	@Override
 	public Component prepareRenderer(TableCellRenderer renderer, int row,
 			int column) {
-			setForeground(pref.getTextColor());
 		try {
 			Component c = super.prepareRenderer(renderer, row, column);
 			if (!isRowSelected(row)) {
@@ -197,7 +197,6 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 				}
 				c.setBackground(color == null ? getBackground() : color);
 			}
-				setForeground(pref.getTextColor());
 			return c;
 		} catch (Exception e) {
 			return null;
