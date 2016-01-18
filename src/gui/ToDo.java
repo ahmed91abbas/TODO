@@ -114,7 +114,6 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 
 		panel.setLayout(grid);
 		panel2.setLayout(grid2);
-
 		setModel(model);
 		setFont(new Font("Serif", Font.PLAIN, textSize));
 		model.addColumn(file.getName());
@@ -186,6 +185,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	@Override
 	public Component prepareRenderer(TableCellRenderer renderer, int row,
 			int column) {
+			setForeground(pref.getTextColor());
 		try {
 			Component c = super.prepareRenderer(renderer, row, column);
 			if (!isRowSelected(row)) {

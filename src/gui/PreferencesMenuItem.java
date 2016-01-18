@@ -103,19 +103,19 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		frame.add(buttons);
 
 		
-		sbar1 = new JScrollBar(java.awt.Adjustable.HORIZONTAL, textColor.getRed(), 1, 0, 255);
+		sbar1 = new JScrollBar(java.awt.Adjustable.HORIZONTAL, textColor.getRed(), 1, 0, 256);
 		sbar1.setBounds(10, 120, 200, 15);
 		sbar1.setBackground(Color.red);
 		sbar1.addAdjustmentListener(this);
 		frame.getContentPane().add(sbar1);
 		sbar2 = new JScrollBar(java.awt.Adjustable.HORIZONTAL, textColor.getGreen(), 1, 0,
-				255);
+				256);
 		sbar2.setBounds(10, 120 + 20, 200, 15);
 		sbar2.setBackground(Color.green);
 		sbar2.addAdjustmentListener(this);
 		frame.getContentPane().add(sbar2);
 		sbar3 = new JScrollBar(java.awt.Adjustable.HORIZONTAL, textColor.getBlue(), 1, 0,
-				255);
+				256);
 		sbar3.setBounds(10, 120 + 40, 200, 15);
 		sbar3.setBackground(Color.blue);
 		sbar3.addAdjustmentListener(this);
@@ -125,19 +125,19 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		textColorPanel.setBackground(textColor);
 		frame.getContentPane().add(textColorPanel);
 		
-		sbar4 = new JScrollBar(java.awt.Adjustable.HORIZONTAL, markingColor.getRed(), 1, 0, 255);
+		sbar4 = new JScrollBar(java.awt.Adjustable.HORIZONTAL, markingColor.getRed(), 1, 0, 256);
 		sbar4.setBounds(10, 220, 200, 15);
 		sbar4.setBackground(Color.red);
 		sbar4.addAdjustmentListener(this);
 		frame.getContentPane().add(sbar4);
 		sbar5 = new JScrollBar(java.awt.Adjustable.HORIZONTAL,markingColor.getGreen(), 1, 0,
-				255);
+				256);
 		sbar5.setBounds(10, 220 + 20, 200, 15);
 		sbar5.setBackground(Color.green);
 		sbar5.addAdjustmentListener(this);
 		frame.getContentPane().add(sbar5);
 		sbar6 = new JScrollBar(java.awt.Adjustable.HORIZONTAL, markingColor.getBlue(), 1, 0,
-				255);
+				256);
 		sbar6.setBounds(10, 220 + 40, 200, 15);
 		sbar6.setBackground(Color.blue);
 		sbar6.addAdjustmentListener(this);
