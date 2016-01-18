@@ -197,6 +197,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 				}
 				c.setBackground(color == null ? getBackground() : color);
 			}
+				setForeground(pref.getTextColor());
 			return c;
 		} catch (Exception e) {
 			return null;
