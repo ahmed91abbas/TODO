@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -26,6 +27,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 	private JFrame frame;
 	private JPanel textColorPanel;
 	private JPanel markingColorPanel;
+	private JTextArea text;
 	private JScrollBar sbar1;
 	private JScrollBar sbar2;
 	private JScrollBar sbar3;
@@ -53,37 +55,43 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		try{
 		textColor = new Color(prefs.getInt("C1", 0), prefs.getInt("C2", 0), prefs.getInt("C3", 0));
 		markingColor = new Color(prefs.getInt("C4", 0), prefs.getInt("C5", 0), prefs.getInt("C6", 0));
+		textSize = prefs.getInt("C0", 0);
 		} catch (Exception e){
 			textColor = DEFAULT_TEXT_COLOR;
 			markingColor = DEFAULT_MARKING_COLOR;
-//			textSize = DEFAULT_TEXT_SIZE;
+			textSize = DEFAULT_TEXT_SIZE;
 		}
 		addActionListener(this);
 	}
 
-	/*
-	 * text size hot key for: ...new...saveandclose colors
-	 */
-
+	
+//TODO text size hot key for: ...new...saveandclose colors
+	 
+//TODO prefent mouse click on main gui when this one is open
+	
 	private void init() {
 		frame = new JFrame("Preferences");
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		JPanel panel = new JPanel();
 		JTextArea jta = new JTextArea();
+		jta.setBackground(getBackground());
+		Font font = new Font("Verdana", Font.BOLD, 15);
+		jta.setFont(font);
 		jta.setText("Set default text size:");
 		jta.setEditable(false);
-		JTextArea textSize = new JTextArea();
+		text = new JTextArea(10,10);
+		text.setText(Integer.toString(prefs.getInt("C0", 0)));
 		GridLayout grid = new GridLayout(1, 2);
 
 		frame.getContentPane().setLayout(null);
-		Border border = BorderFactory.createLineBorder(Color.BLUE, 5);
-		textSize.setBorder(border);
-		jta.setBorder(border);
+		Border border = BorderFactory.createLineBorder(Color.BLACK, 1);
+		text.setBorder(border);
+//		jta.setBorder(border);
 
 		panel.setLayout(grid);
 		panel.add(jta);
-		panel.add(textSize);
-		panel.setBounds(0, 0, 400, 55);
+		panel.add(text);
+		panel.setBounds(0, 10, 400, 25);
 		frame.add(panel);
 
 		JPanel buttons = new JPanel();
@@ -103,19 +111,19 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		frame.add(buttons);
 
 		
-		sbar1 = new JScrollBar(java.awt.Adjustable.HORIZONTAL, textColor.getRed(), 1, 0, 255);
+		sbar1 = new JScrollBar(java.awt.Adjustable.HORIZONTAL, textColor.getRed(), 1, 0, 256);
 		sbar1.setBounds(10, 120, 200, 15);
 		sbar1.setBackground(Color.red);
 		sbar1.addAdjustmentListener(this);
 		frame.getContentPane().add(sbar1);
 		sbar2 = new JScrollBar(java.awt.Adjustable.HORIZONTAL, textColor.getGreen(), 1, 0,
-				255);
+				256);
 		sbar2.setBounds(10, 120 + 20, 200, 15);
 		sbar2.setBackground(Color.green);
 		sbar2.addAdjustmentListener(this);
 		frame.getContentPane().add(sbar2);
 		sbar3 = new JScrollBar(java.awt.Adjustable.HORIZONTAL, textColor.getBlue(), 1, 0,
-				255);
+				256);
 		sbar3.setBounds(10, 120 + 40, 200, 15);
 		sbar3.setBackground(Color.blue);
 		sbar3.addAdjustmentListener(this);
@@ -125,19 +133,19 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		textColorPanel.setBackground(textColor);
 		frame.getContentPane().add(textColorPanel);
 		
-		sbar4 = new JScrollBar(java.awt.Adjustable.HORIZONTAL, markingColor.getRed(), 1, 0, 255);
+		sbar4 = new JScrollBar(java.awt.Adjustable.HORIZONTAL, markingColor.getRed(), 1, 0, 256);
 		sbar4.setBounds(10, 220, 200, 15);
 		sbar4.setBackground(Color.red);
 		sbar4.addAdjustmentListener(this);
 		frame.getContentPane().add(sbar4);
 		sbar5 = new JScrollBar(java.awt.Adjustable.HORIZONTAL,markingColor.getGreen(), 1, 0,
-				255);
+				256);
 		sbar5.setBounds(10, 220 + 20, 200, 15);
 		sbar5.setBackground(Color.green);
 		sbar5.addAdjustmentListener(this);
 		frame.getContentPane().add(sbar5);
 		sbar6 = new JScrollBar(java.awt.Adjustable.HORIZONTAL, markingColor.getBlue(), 1, 0,
-				255);
+				256);
 		sbar6.setBounds(10, 220 + 40, 200, 15);
 		sbar6.setBackground(Color.blue);
 		sbar6.addAdjustmentListener(this);
@@ -197,6 +205,9 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		public void actionPerformed(ActionEvent e) {
 			setValuesInTextColorReg(sbar1.getValue(), sbar2.getValue(), sbar3.getValue());
 			setValuesInMarkingColorReg(sbar4.getValue(), sbar5.getValue(), sbar6.getValue());
+			textSize = Integer.parseInt(text.getText());
+			prefs.putInt("C0", textSize);
+			
 			textColor = textColorPanel.getBackground();
 			markingColor = markingColorPanel.getBackground();
 			frame.setVisible(false);
