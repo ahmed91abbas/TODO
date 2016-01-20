@@ -138,6 +138,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		frame.setVisible(true);
 		
 		lastOpened.loadLastOpenedFiles();
+		pref.showInGUI();
 	}
 
 	private class NewListener implements ActionListener {

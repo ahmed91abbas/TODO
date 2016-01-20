@@ -18,6 +18,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.border.Border;
 
 @SuppressWarnings("serial")
@@ -28,7 +29,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 	private ToDo todo;
 	private JPanel textColorPanel;
 	private JPanel markingColorPanel;
-	private JTextArea text;
+	private JTextField text;
 	private JScrollBar sbar1;
 	private JScrollBar sbar2;
 	private JScrollBar sbar3;
@@ -63,7 +64,6 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 			markingColor = DEFAULT_MARKING_COLOR;
 			textSize = DEFAULT_TEXT_SIZE;
 		}
-//		showInGUI(); //TODO fix so that values load on start up
 		addActionListener(this);
 	}
 
@@ -72,7 +72,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 	 
 //TODO prefent mouse click on main gui when this one is open
 	
-	private void showInGUI() {
+	public void showInGUI() {
 		todo.setForeground(textColor);
 		todo.setTextSize(textSize);
 	}
@@ -88,7 +88,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		jta.setFont(font);
 		jta.setText("Set default text size:");
 		jta.setEditable(false);
-		text = new JTextArea();
+		text = new NumberField();
 		text.setText(Integer.toString(prefs.getInt("C0", 0)));
 		GridLayout grid = new GridLayout(1, 2);
 
@@ -186,7 +186,8 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		public void actionPerformed(ActionEvent e) {
 			textSize = DEFAULT_TEXT_SIZE;
 			prefs.putInt("C0", textSize);
-			text.setText(Integer.toString(textSize));
+			String s = Integer.toString(textSize);
+			text.setText(s);
 			textColor = DEFAULT_TEXT_COLOR;
 			markingColor = DEFAULT_MARKING_COLOR;
 			sbar1.setValue(DEFAULT_TEXT_COLOR.getRed());
