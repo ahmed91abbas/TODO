@@ -139,6 +139,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		
 		lastOpened.loadLastOpenedFiles();
 		pref.showInGUI();
+		
 	}
 
 	private class NewListener implements ActionListener {
@@ -188,6 +189,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	public Component prepareRenderer(TableCellRenderer renderer, int row,
 			int column) {
 		try {
+			
 			Component c = super.prepareRenderer(renderer, row, column);
 			if (!isRowSelected(row)) {
 				Color color;
