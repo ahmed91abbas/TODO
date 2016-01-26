@@ -69,8 +69,6 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 
 	
 //TODO text size hot key for: ...new...saveandclose colors
-	 
-//TODO prefent mouse click on main gui when this one is open
 	
 	public void showInGUI() {
 		todo.setForeground(textColor);

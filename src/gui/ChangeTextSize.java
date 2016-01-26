@@ -17,8 +17,12 @@ public class ChangeTextSize extends JMenuItem implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String s = JOptionPane.showInputDialog("Enter text size");
-		if(s != null)
+		if (s != null){
+		if(!s.matches("[0-9]+")){
+			JOptionPane.showMessageDialog(null, "The input must be a number!","Obs..." , JOptionPane.ERROR_MESSAGE);
+		}
+		else 
 		todo.setTextSize(Integer.parseInt(s));
 	}
-
+	}
 }

@@ -102,7 +102,6 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		New.addActionListener(new NewListener());
 		panel.add(New);
 		New.setMnemonic(KeyEvent.VK_W);
-		System.out.println(KeyEvent.VK_W);
 		
 		
 		JButton delete = new JButton("Delete");
