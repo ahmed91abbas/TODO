@@ -159,7 +159,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 			}
 		}
 	}
-//TODO don't allow indata to be not integer in pref and setTextSize classes
+
 	public void setTextSize(int textSize) {
 		this.textSize = textSize;
 		setFont(new Font("Serif", Font.PLAIN, textSize));
