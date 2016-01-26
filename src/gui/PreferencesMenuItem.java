@@ -95,7 +95,6 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		frame.getContentPane().setLayout(null);
 		Border border = BorderFactory.createLineBorder(Color.BLACK, 1);
 		text.setBorder(border);
-//		jta.setBorder(border);
 
 		panel.setLayout(grid);
 		panel.add(jta);
@@ -226,6 +225,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 	
 			frame.setVisible(false);
 			frame.dispose();
+			todo.enableFrame(true);
 		}
 	}
 
@@ -233,6 +233,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		public void actionPerformed(ActionEvent e) {
 			frame.setVisible(false);
 			frame.dispose();
+			todo.enableFrame(true);
 		}
 	}
 
@@ -244,6 +245,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		todo.enableFrame(false);
 		init();
 	}
 }

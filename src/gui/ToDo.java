@@ -102,6 +102,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		New.addActionListener(new NewListener());
 		panel.add(New);
 		New.setMnemonic(KeyEvent.VK_W);
+		System.out.println(KeyEvent.VK_W);
 		
 		
 		JButton delete = new JButton("Delete");
@@ -484,6 +485,10 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	@Override
 	public void mouseMoved(MouseEvent e) {
 
+	}
+	
+	public void enableFrame(boolean enable){
+		frame .setEnabled(enable);
 	}
 
 	public static void main(String[] args) {
