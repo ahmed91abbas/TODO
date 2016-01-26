@@ -34,16 +34,9 @@ public class NumberField extends JTextField {
 			}
 			for(int i = 0; i < str.length(); i++){
 				String c = "" + str.charAt(i);
-				boolean oneToNine = !c.equals("") && !c.equals("" + 1) && !c.equals("" + 2)
-						&& !c.equals("" + 3) && !c.equals("" + 4)
-						&& !c.equals("" + 5) && !c.equals("" + 6)
-						&& !c.equals("" + 7) && !c.equals("" + 8)
-						&& !c.equals("" + 9);
-			if (oneToNine && i == 0) {
-				return;
-			} else if (oneToNine && i > 0 && !c.equals("" + 0)){ //TODO fix that you can have the second integer as a zero
-				return;
-			}
+				if(!c.matches("[0-9]+")){
+					return;
+				}
 			}
 			fb.replace(offset, length, str, attr);
 		}

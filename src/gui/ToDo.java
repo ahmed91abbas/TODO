@@ -9,6 +9,7 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -100,12 +101,16 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		JButton New = new JButton("New");
 		New.addActionListener(new NewListener());
 		panel.add(New);
+		New.setMnemonic(KeyEvent.VK_W);
+		
+		
 		JButton delete = new JButton("Delete");
 		delete.addActionListener(new DeleteMenuItem(this));
 		panel.add(delete);
 		JButton saveAndClose = new JButton("Save and close");
 		saveAndClose.addActionListener(new saveAndClose());
 		panel.add(saveAndClose);
+		saveAndClose.setMnemonic(KeyEvent.VK_Q);
 		JButton done = new JButton("Mark as done/undone");
 		done.addActionListener(new doneListener());
 		panel.add(done);
@@ -184,7 +189,8 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 			}
 		}
 	}
-
+	
+	/*Sets the background color of the JTable **/
 	@Override
 	public Component prepareRenderer(TableCellRenderer renderer, int row,
 			int column) {
