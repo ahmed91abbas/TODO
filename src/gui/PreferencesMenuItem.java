@@ -12,7 +12,6 @@ import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.prefs.Preferences;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -41,6 +40,8 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 	private int textSize = 0;
 	private Color textColor;
 	private Color markingColor;
+	private JTextArea hotkey1TextArea;
+	private JTextArea hotkey2TextArea;
 	private static final Color DEFAULT_TEXT_COLOR = Color.BLACK;
 	private static final Color DEFAULT_MARKING_COLOR = Color.GREEN;
 	private static final int DEFAULT_TEXT_SIZE = 25;
@@ -74,7 +75,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		addActionListener(this);
 	}
 
-	// TODO text size hot key for: ...new...saveandclose colors
+	// TODO Connect hotkeys with todo
 
 	public void showInGUI() {
 		todo.setForeground(textColor);
@@ -102,7 +103,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		textSizePanel.setLayout(grid);
 		textSizePanel.add(jta);
 		textSizePanel.add(text);
-		textSizePanel.setBounds(0, 10, 350, 25);
+		textSizePanel.setBounds(10, 10, 350, 25);
 		frame.add(textSizePanel);
 
 		JPanel buttons = new JPanel();
@@ -121,21 +122,29 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		buttons.setBounds(0, 370, 400, 50);
 		frame.add(buttons);
 
-		JPanel hotkey1 = new JPanel();
+		hotkey1TextArea = new JTextArea();
+		hotkey1TextArea.setBackground(getBackground());
+		hotkey1TextArea.setFont(font);
+		hotkey1TextArea.setText("Press Alt + "+KeyEvent.getKeyText(prefs.getInt("C7", 0))+" to make a new task");
+		hotkey1TextArea.setEditable(false);
 		JButton newHotkey = new JButton("Change");
 		newHotkey.addKeyListener(new newHotkeyEvent());
-		hotkey1.add(newHotkey);
-		hotkey1.setBounds(0, 60, 350, 35);
-		frame.add(hotkey1);
+		hotkey1TextArea.setBounds(10, 60, 280, 35);
+		newHotkey.setBounds(295, 60, 80, 25);
+		frame.add(hotkey1TextArea);
+		frame.add(newHotkey);
 		
-		
-		JPanel hotkey2 = new JPanel();
+		hotkey2TextArea = new JTextArea();
+		hotkey2TextArea.setBackground(getBackground());
+		hotkey2TextArea.setFont(font);
+		hotkey2TextArea.setText("Press Alt + "+KeyEvent.getKeyText(prefs.getInt("C8", 0))+" to save and close");
+		hotkey2TextArea.setEditable(false);
 		JButton SaveAndCloseHotkey = new JButton("Change");
 		SaveAndCloseHotkey.addKeyListener(new SaveAndCloseHotkeyEvent());
-		hotkey2.add(SaveAndCloseHotkey);
-		hotkey2.setBounds(0, 100, 350, 35);
-		frame.add(hotkey2);
-		
+		hotkey2TextArea.setBounds(10, 100, 280, 35);
+		SaveAndCloseHotkey.setBounds(295, 100, 80, 25);
+		frame.add(hotkey2TextArea);
+		frame.add(SaveAndCloseHotkey);
 		
 		JTextArea changeTextColor = new JTextArea();
 		changeTextColor.setBackground(getBackground());
@@ -210,18 +219,16 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 	private class newHotkeyEvent extends KeyAdapter {
 		@Override
 		public void keyPressed(KeyEvent event) {
-
-			char ch = event.getKeyChar();
-			System.out.println(ch);
+			prefs.putInt("C7", event.getKeyCode());
+			hotkey1TextArea.setText("Press Alt + "+event.getKeyChar()+" to make a new task");
 		}
 	}
 
 	private class SaveAndCloseHotkeyEvent extends KeyAdapter {
 		@Override
 		public void keyPressed(KeyEvent event) {
-
-			char ch = event.getKeyChar();
-			System.out.println(ch);
+			prefs.putInt("C8", event.getKeyCode());
+			hotkey2TextArea.setText("Press Alt + "+event.getKeyChar()+" to save and close");
 		}
 	}
 
@@ -276,18 +283,19 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 			textColor = textColorPanel.getBackground();
 			markingColor = markingColorPanel.getBackground();
 			showInGUI();
-
+			todo.enableFrame(true);
 			frame.setVisible(false);
 			frame.dispose();
-			todo.enableFrame(true);
+			
 		}
 	}
 
 	private class cancelListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			todo.enableFrame(true);
 			frame.setVisible(false);
 			frame.dispose();
-			todo.enableFrame(true);
+			
 		}
 	}
 
