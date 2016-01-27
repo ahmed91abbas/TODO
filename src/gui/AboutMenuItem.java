@@ -27,7 +27,7 @@ public class AboutMenuItem extends JMenuItem implements ActionListener {
 		jta.setLineWrap(true);
 
 		jta.append("\n Version 1.2");
-		jta.append("\n\nDate of release: December 2015");
+		jta.append("\n\nDate of release: Januari 2016");
 		jta.append("\n\nIf you have any suggestions or if you want to leave a feedback feel free to contact me:\nEmail: snipeeeeer@gmail.com");
 
 		frame.add(jta);

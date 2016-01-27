@@ -75,8 +75,6 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		addActionListener(this);
 	}
 
-	// TODO Connect hotkeys with todo
-
 	public void showInGUI() {
 		todo.setForeground(textColor);
 		todo.setTextSize(textSize);
@@ -93,6 +91,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		jta.setText("Set default text size:");
 		jta.setEditable(false);
 		text = new NumberField();
+		text.setHorizontalAlignment(JTextField.CENTER);
 		text.setText(Integer.toString(prefs.getInt("C0", 0)));
 		GridLayout grid = new GridLayout(1, 2);
 
@@ -301,6 +300,14 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 
 	public Color getMarkingColor() {
 		return markingColor;
+	}
+	
+	public int getNewHotkey(){
+		return prefs.getInt("C7", 0);
+	}
+	
+	public int getSaveAndCloseHotkey(){
+		return prefs.getInt("C8", 0);
 	}
 
 	@Override

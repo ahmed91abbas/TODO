@@ -9,7 +9,6 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -101,7 +100,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		JButton New = new JButton("New");
 		New.addActionListener(new NewListener());
 		panel.add(New);
-		New.setMnemonic(KeyEvent.VK_W);
+		New.setMnemonic(pref.getNewHotkey());
 		
 		
 		JButton delete = new JButton("Delete");
@@ -110,7 +109,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		JButton saveAndClose = new JButton("Save and close");
 		saveAndClose.addActionListener(new saveAndClose());
 		panel.add(saveAndClose);
-		saveAndClose.setMnemonic(KeyEvent.VK_Q);
+		saveAndClose.setMnemonic(pref.getSaveAndCloseHotkey());
 		JButton done = new JButton("Mark as done/undone");
 		done.addActionListener(new doneListener());
 		panel.add(done);
