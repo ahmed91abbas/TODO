@@ -11,7 +11,9 @@ import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -42,6 +44,8 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 	private Color markingColor;
 	private JTextArea hotkey1TextArea;
 	private JTextArea hotkey2TextArea;
+	private int newKeyCode;
+	private int saveAndCloseKeyCode;
 	private static final Color DEFAULT_TEXT_COLOR = Color.BLACK;
 	private static final Color DEFAULT_MARKING_COLOR = Color.GREEN;
 	private static final int DEFAULT_TEXT_SIZE = 25;
@@ -55,29 +59,28 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 	final static String C6 = "sbar6";
 	final static String C7 = "newHotkey";
 	final static String C8 = "SaveAndCloseHotkey";
-	
 
 	public PreferencesMenuItem(ToDo todo) {
 		super("Preferences");
 		this.todo = todo;
 		prefs = Preferences.userRoot().node(this.getClass().getName());
-		try {
-			textColor = new Color(prefs.getInt("C1", 0), prefs.getInt("C2", 0),
-					prefs.getInt("C3", 0));
-			markingColor = new Color(prefs.getInt("C4", 0), prefs.getInt("C5",
-					0), prefs.getInt("C6", 0));
-			textSize = prefs.getInt("C0", 0);
-		} catch (Exception e) {
-			textColor = DEFAULT_TEXT_COLOR;
-			markingColor = DEFAULT_MARKING_COLOR;
-			textSize = DEFAULT_TEXT_SIZE;
-		}
+
+		textColor = new Color(prefs.getInt("C1", 0), prefs.getInt("C2", 0),
+				prefs.getInt("C3", 0));
+		markingColor = new Color(prefs.getInt("C4", 0),
+				prefs.getInt("C5", 255), prefs.getInt("C6", 0));
+		textSize = prefs.getInt("C0", 25);
+		newKeyCode = prefs.getInt("C7", KeyEvent.VK_N);
+		saveAndCloseKeyCode = prefs.getInt("C8", KeyEvent.VK_Q);
+
 		addActionListener(this);
 	}
 
 	public void showInGUI() {
 		todo.setForeground(textColor);
 		todo.setTextSize(textSize);
+		todo.setHotkeyForNew(newKeyCode);
+		todo.setHotkeyForSaveAndClose(saveAndCloseKeyCode);
 	}
 
 	private void init() {
@@ -92,7 +95,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		jta.setEditable(false);
 		text = new NumberField();
 		text.setHorizontalAlignment(JTextField.CENTER);
-		text.setText(Integer.toString(prefs.getInt("C0", 0)));
+		text.setText(Integer.toString(prefs.getInt("C0", 25)));
 		GridLayout grid = new GridLayout(1, 2);
 
 		frame.getContentPane().setLayout(null);
@@ -124,7 +127,9 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		hotkey1TextArea = new JTextArea();
 		hotkey1TextArea.setBackground(getBackground());
 		hotkey1TextArea.setFont(font);
-		hotkey1TextArea.setText("Press Alt + "+KeyEvent.getKeyText(prefs.getInt("C7", 0))+" to make a new task");
+		hotkey1TextArea.setText("Press Alt + "
+				+ KeyEvent.getKeyText(prefs.getInt("C7", KeyEvent.VK_N))
+				+ " to make a new task");
 		hotkey1TextArea.setEditable(false);
 		JButton newHotkey = new JButton("Change");
 		newHotkey.addKeyListener(new newHotkeyEvent());
@@ -132,11 +137,13 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		newHotkey.setBounds(295, 60, 80, 25);
 		frame.add(hotkey1TextArea);
 		frame.add(newHotkey);
-		
+
 		hotkey2TextArea = new JTextArea();
 		hotkey2TextArea.setBackground(getBackground());
 		hotkey2TextArea.setFont(font);
-		hotkey2TextArea.setText("Press Alt + "+KeyEvent.getKeyText(prefs.getInt("C8", 0))+" to save and close");
+		hotkey2TextArea.setText("Press Alt + "
+				+ KeyEvent.getKeyText(prefs.getInt("C8", KeyEvent.VK_Q))
+				+ " to save and close");
 		hotkey2TextArea.setEditable(false);
 		JButton SaveAndCloseHotkey = new JButton("Change");
 		SaveAndCloseHotkey.addKeyListener(new SaveAndCloseHotkeyEvent());
@@ -144,7 +151,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		SaveAndCloseHotkey.setBounds(295, 100, 80, 25);
 		frame.add(hotkey2TextArea);
 		frame.add(SaveAndCloseHotkey);
-		
+
 		JTextArea changeTextColor = new JTextArea();
 		changeTextColor.setBackground(getBackground());
 		changeTextColor.setFont(font);
@@ -174,7 +181,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		textColorPanel.setBounds(220, 185, 50, 55);
 		textColorPanel.setBackground(textColor);
 		frame.getContentPane().add(textColorPanel);
-		
+
 		JTextArea changeBackgroundColor = new JTextArea();
 		changeBackgroundColor.setBackground(getBackground());
 		changeBackgroundColor.setFont(font);
@@ -218,16 +225,18 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 	private class newHotkeyEvent extends KeyAdapter {
 		@Override
 		public void keyPressed(KeyEvent event) {
-			prefs.putInt("C7", event.getKeyCode());
-			hotkey1TextArea.setText("Press Alt + "+event.getKeyChar()+" to make a new task");
+			newKeyCode = event.getKeyCode();
+			hotkey1TextArea.setText("Press Alt + " + event.getKeyChar()
+					+ " to make a new task");
 		}
 	}
 
 	private class SaveAndCloseHotkeyEvent extends KeyAdapter {
 		@Override
 		public void keyPressed(KeyEvent event) {
-			prefs.putInt("C8", event.getKeyCode());
-			hotkey2TextArea.setText("Press Alt + "+event.getKeyChar()+" to save and close");
+			saveAndCloseKeyCode = event.getKeyCode();
+			hotkey2TextArea.setText("Press Alt + " + event.getKeyChar()
+					+ " to save and close");
 		}
 	}
 
@@ -255,6 +264,15 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 			sbar5.setValue(DEFAULT_MARKING_COLOR.getGreen());
 			sbar6.setValue(DEFAULT_MARKING_COLOR.getBlue());
 			markingColorPanel.setBackground(DEFAULT_MARKING_COLOR);
+			newKeyCode = KeyEvent.VK_N;
+			prefs.putInt("C7", newKeyCode);
+			hotkey1TextArea.setText("Press Alt + "
+					+ KeyEvent.getKeyText(newKeyCode) + " to make a new task");
+			saveAndCloseKeyCode = KeyEvent.VK_Q;
+			prefs.putInt("C8", saveAndCloseKeyCode);
+			hotkey2TextArea.setText("Press Alt + "
+					+ KeyEvent.getKeyText(saveAndCloseKeyCode)
+					+ " to save and close");
 		}
 	}
 
@@ -278,6 +296,8 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 					sbar6.getValue());
 			textSize = Integer.parseInt(text.getText());
 			prefs.putInt("C0", textSize);
+			prefs.putInt("C7", newKeyCode);
+			prefs.putInt("C8", saveAndCloseKeyCode);
 
 			textColor = textColorPanel.getBackground();
 			markingColor = markingColorPanel.getBackground();
@@ -285,7 +305,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 			todo.enableFrame(true);
 			frame.setVisible(false);
 			frame.dispose();
-			
+
 		}
 	}
 
@@ -294,20 +314,12 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 			todo.enableFrame(true);
 			frame.setVisible(false);
 			frame.dispose();
-			
+
 		}
 	}
 
 	public Color getMarkingColor() {
 		return markingColor;
-	}
-	
-	public int getNewHotkey(){
-		return prefs.getInt("C7", 0);
-	}
-	
-	public int getSaveAndCloseHotkey(){
-		return prefs.getInt("C8", 0);
 	}
 
 	@Override

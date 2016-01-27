@@ -44,6 +44,8 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	private ToDoPrintStream print;
 	private String tempRowContent;
 	private int tempRowIndex, indexMousePressed;
+	private JButton New;
+	private JButton saveAndClose;
 	
 
 	public ToDo() {
@@ -97,19 +99,16 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		panel2.add(sp);
 
-		JButton New = new JButton("New");
+		New = new JButton("New");
 		New.addActionListener(new NewListener());
 		panel.add(New);
-		New.setMnemonic(pref.getNewHotkey());
-		
 		
 		JButton delete = new JButton("Delete");
 		delete.addActionListener(new DeleteMenuItem(this));
 		panel.add(delete);
-		JButton saveAndClose = new JButton("Save and close");
+		saveAndClose = new JButton("Save and close");
 		saveAndClose.addActionListener(new saveAndClose());
 		panel.add(saveAndClose);
-		saveAndClose.setMnemonic(pref.getSaveAndCloseHotkey());
 		JButton done = new JButton("Mark as done/undone");
 		done.addActionListener(new doneListener());
 		panel.add(done);
@@ -489,6 +488,14 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		frame .setEnabled(enable);
 	}
 
+	public void setHotkeyForNew(int keyCode){
+		New.setMnemonic(keyCode);
+	}
+	
+	public void setHotkeyForSaveAndClose(int keyCode){
+		saveAndClose.setMnemonic(keyCode);
+	}
+	
 	public static void main(String[] args) {
 		@SuppressWarnings("unused")
 		ToDo toDo = new ToDo();
