@@ -223,18 +223,24 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 	private class newHotkeyEvent extends KeyAdapter {
 		@Override
 		public void keyPressed(KeyEvent event) {
-			newKeyCode = event.getKeyCode();
-			hotkey1TextArea.setText("Press Alt + " + event.getKeyChar()
-					+ " to make a new task");
+			String s = KeyEvent.getKeyText(event.getKeyCode());
+			if (s.matches("[0-9a-zA-Z]+") && s.length() == 1) {
+				newKeyCode = event.getKeyCode();
+				hotkey1TextArea.setText("Press Alt + " + event.getKeyChar()
+						+ " to make a new task");
+			}
 		}
 	}
 
 	private class SaveAndCloseHotkeyEvent extends KeyAdapter {
 		@Override
 		public void keyPressed(KeyEvent event) {
-			saveAndCloseKeyCode = event.getKeyCode();
-			hotkey2TextArea.setText("Press Alt + " + event.getKeyChar()
-					+ " to save and close");
+			String s = KeyEvent.getKeyText(event.getKeyCode());
+			if (s.matches("[0-9a-zA-Z]+") && s.length() == 1) {
+				saveAndCloseKeyCode = event.getKeyCode();
+				hotkey2TextArea.setText("Press Alt + " + event.getKeyChar()
+						+ " to save and close");
+			}
 		}
 	}
 
