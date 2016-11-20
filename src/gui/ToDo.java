@@ -46,18 +46,15 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	private int tempRowIndex, indexMousePressed;
 	private JButton New;
 	private JButton saveAndClose;
-	
 
 	public ToDo() {
-		
+
 		db = new ArrayList<String>();
 		file = new File("ToDo");
 		frame = new JFrame(file.getName());
 		model = new DefaultTableModel();
 		lastOpened = new LastOpened(this);
 		pref = new PreferencesMenuItem(this);
-		
-		
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
@@ -67,14 +64,17 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		frame.setLayout(new BorderLayout());
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		frame.setLocation(dim.width / 3 - frame.getSize().width / 3, dim.height
-				/ 6 - frame.getSize().height / 6);
+		frame.setLocation(dim.width / 3 - frame.getSize().width / 3, dim.height / 6 - frame.getSize().height / 6);
 
+		Font font = new Font("Verdana", Font.PLAIN, 20);
 		JMenuBar menu = new JMenuBar();
 		frame.setJMenuBar(menu);
 		JMenu file = new JMenu("File");
+		file.setFont(font);
 		JMenu edit = new JMenu("Edit");
+		edit.setFont(font);
 		JMenu help = new JMenu("Help");
+		help.setFont(font);
 		menu.add(file);
 		menu.add(edit);
 		menu.add(help);
@@ -94,22 +94,26 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		JPanel panel = new JPanel();
 		JPanel panel2 = new JPanel();
 
-		JScrollPane sp = new JScrollPane(this,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+		JScrollPane sp = new JScrollPane(this, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		panel2.add(sp);
 
+		Font buttonsFont = new Font("Verdana", Font.HANGING_BASELINE, 20);
 		New = new JButton("New");
+		New.setFont(buttonsFont);
 		New.addActionListener(new NewListener());
 		panel.add(New);
-		
+
 		JButton delete = new JButton("Delete");
+		delete.setFont(buttonsFont);
 		delete.addActionListener(new DeleteMenuItem(this));
 		panel.add(delete);
 		saveAndClose = new JButton("Save and close");
+		saveAndClose.setFont(buttonsFont);
 		saveAndClose.addActionListener(new saveAndClose());
 		panel.add(saveAndClose);
 		JButton done = new JButton("Mark as done/undone");
+		done.setFont(buttonsFont);
 		done.addActionListener(new doneListener());
 		panel.add(done);
 
@@ -136,13 +140,13 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 
 		frame.add(panel2, BorderLayout.CENTER);
 		frame.add(panel, BorderLayout.PAGE_END);
-		frame.setPreferredSize(new Dimension(500, 500));
+		frame.setPreferredSize(new Dimension(600, 600));
 		frame.pack();
 		frame.setVisible(true);
-		
+
 		lastOpened.loadLastOpenedFiles();
 		pref.showInGUI();
-		
+
 	}
 
 	private class NewListener implements ActionListener {
@@ -187,20 +191,19 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 			}
 		}
 	}
-	
-	/*Sets the background color of the JTable **/
+
+	/* Sets the background color of the JTable **/
 	@Override
-	public Component prepareRenderer(TableCellRenderer renderer, int row,
-			int column) {
+	public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
 		try {
-			
+
 			Component c = super.prepareRenderer(renderer, row, column);
 			if (!isRowSelected(row)) {
 				Color color;
 				if (isDone(row)) {
 					color = pref.getMarkingColor();
 				} else {
-					color = Color.WHITE;
+					color = new Color(245,245,220);
 				}
 				c.setBackground(color == null ? getBackground() : color);
 			}
@@ -214,8 +217,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		String s = "";
 		try {
 			s = db.get(row);
-			if (s.length() >= 5
-					&& s.substring(s.length() - 5).equalsIgnoreCase("#done")) {
+			if (s.length() >= 5 && s.substring(s.length() - 5).equalsIgnoreCase("#done")) {
 				return true;
 			}
 		} catch (Exception e) {
@@ -231,21 +233,22 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		}
 	}
 
-	private void changeTaskState(int row){
-		if(isDone(row)){
+	private void changeTaskState(int row) {
+		if (isDone(row)) {
 			String s = db.get(row);
 			s = s.substring(0, s.length() - 5);
 			db.set(row, s);
-			}
-		else if (row != -1) {
-				String s = db.get(row);
-				db.set(row, s + "#done");		
+		} else if (row != -1) {
+			String s = db.get(row);
+			db.set(row, s + "#done");
 		}
 	}
 
 	private class ClearLastOpened extends JMenuItem implements ActionListener {
 		public ClearLastOpened() {
 			super("Clear last opened list");
+			Font font = new Font("Verdana", Font.ITALIC, 18);
+			super.setFont(font);
 			addActionListener(this);
 		}
 
@@ -260,20 +263,16 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 
 		public void actionPerformed(ActionEvent e) {
 			if (!file.exists()) {
-				String message = "Do you want to sava this file as: "
-						+ file.getAbsolutePath() + "?";
+				String message = "Do you want to sava this file as: " + file.getAbsolutePath() + "?";
 
 				final String objButtons[] = { "Yes", "No", "Cancel" };
-				int option = JOptionPane.showOptionDialog(null, message,
-						"Obs...", JOptionPane.DEFAULT_OPTION,
-						JOptionPane.WARNING_MESSAGE, null, objButtons,
-						objButtons[2]);
+				int option = JOptionPane.showOptionDialog(null, message, "Obs...", JOptionPane.DEFAULT_OPTION,
+						JOptionPane.WARNING_MESSAGE, null, objButtons, objButtons[2]);
 				if (option == 0) {
 					try {
 						saveToFile(file);
 					} catch (FileNotFoundException e1) {
-						JOptionPane.showMessageDialog(null, e1.getMessage(),
-								"Obs...", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, e1.getMessage(), "Obs...", JOptionPane.ERROR_MESSAGE);
 					}
 				}
 				if (option == 2) {
@@ -283,8 +282,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 				try {
 					saveToFile(file);
 				} catch (FileNotFoundException e1) {
-					JOptionPane.showMessageDialog(null, e1.getMessage(),
-							"Obs...", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, e1.getMessage(), "Obs...", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
 			}
@@ -318,15 +316,13 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		String message = "Save changes before exit?";
 
 		final String objButtons[] = { "Yes", "No", "Cancel" };
-		int option = JOptionPane.showOptionDialog(null, message, "Obs...",
-				JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null,
-				objButtons, objButtons[2]);
+		int option = JOptionPane.showOptionDialog(null, message, "Obs...", JOptionPane.DEFAULT_OPTION,
+				JOptionPane.WARNING_MESSAGE, null, objButtons, objButtons[2]);
 		if (option == 0) {
 			try {
 				saveToFile(file);
 			} catch (FileNotFoundException e1) {
-				JOptionPane.showMessageDialog(null, e1.getMessage(), "Obs...",
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, e1.getMessage(), "Obs...", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 
@@ -337,17 +333,14 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		System.exit(0);
 	}
 
-	public void rename(String newName, boolean renameFile, boolean renameFrame)
-			throws IOException {
-		if (newName.trim().equals(".txt") || newName.isEmpty()
-				|| newName.trim().equals("")) {
+	public void rename(String newName, boolean renameFile, boolean renameFrame) throws IOException {
+		if (newName.trim().equals(".txt") || newName.isEmpty() || newName.trim().equals("")) {
 			throw new java.io.IOException("Illegal file name. Renaming failed!");
 		}
 		if (renameFile) {
 			File newFile = new File(newName);
 			if (newFile.exists())
-				throw new java.io.IOException(
-						"A file with that name already exists");
+				throw new java.io.IOException("A file with that name already exists");
 			file.renameTo(newFile);
 			lastOpened.add(newFile.getAbsolutePath());
 		}
@@ -362,8 +355,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		db = new ArrayList<String>(loadList);
 		for (int i = 0; i < db.size(); i++) {
 			String s = db.get(i);
-			if (s.length() > 5
-					&& s.substring(s.length() - 5).equalsIgnoreCase("#done")) {
+			if (s.length() > 5 && s.substring(s.length() - 5).equalsIgnoreCase("#done")) {
 				s = s.substring(0, s.length() - 5);
 			}
 			model.addRow(new Object[] { s });
@@ -389,13 +381,10 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 			try {
 				rename(filename, false, true);
 			} catch (IOException e) {
-				JOptionPane.showMessageDialog(null, e.getMessage(), "Obs...",
-						JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, e.getMessage(), "Obs...", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-			if (filename.length() > 3
-					&& filename.substring(filename.length() - 4)
-							.equalsIgnoreCase(".txt")) {
+			if (filename.length() > 3 && filename.substring(filename.length() - 4).equalsIgnoreCase(".txt")) {
 				print = new ToDoPrintStream(file.toString());
 			} else {
 
@@ -433,12 +422,12 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		setRowSelectionAllowed(false);
 		Point point = e.getPoint();
 		int row = rowAtPoint(point);
-		
+
 		int mouseButton = e.getButton();
-		if(mouseButton == MouseEvent.BUTTON3){
+		if (mouseButton == MouseEvent.BUTTON3) {
 			changeTaskState(row);
 		}
-		
+
 		if (row >= 0 && row < model.getRowCount()) {
 			tempRowContent = (String) model.getValueAt(row, 0);
 			tempRowIndex = indexMousePressed = row;
@@ -450,16 +439,16 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		Point point = e.getPoint();
 		int row = rowAtPoint(point);
 		changeSelection(0, 0, false, false);
-		if (row == indexMousePressed){
+		if (row == indexMousePressed) {
 			setRowSelectionAllowed(true);
 			changeSelection(row, 0, false, false);
+		}
 	}
-	}
+
 	@Override
 	public void mouseDragged(MouseEvent e) {
 		int mouseButton = e.getModifiers();
-		if (mouseButton == MouseEvent.BUTTON1
-				|| mouseButton == MouseEvent.BUTTON1_MASK) {
+		if (mouseButton == MouseEvent.BUTTON1 || mouseButton == MouseEvent.BUTTON1_MASK) {
 			Point point = e.getPoint();
 			int row = rowAtPoint(point);
 			if (row >= 0 && row < model.getRowCount() && row != tempRowIndex) {
@@ -483,19 +472,19 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	public void mouseMoved(MouseEvent e) {
 
 	}
-	
-	public void enableFrame(boolean enable){
-		frame .setEnabled(enable);
+
+	public void enableFrame(boolean enable) {
+		frame.setEnabled(enable);
 	}
 
-	public void setHotkeyForNew(int keyCode){
+	public void setHotkeyForNew(int keyCode) {
 		New.setMnemonic(keyCode);
 	}
-	
-	public void setHotkeyForSaveAndClose(int keyCode){
+
+	public void setHotkeyForSaveAndClose(int keyCode) {
 		saveAndClose.setMnemonic(keyCode);
 	}
-	
+
 	public static void main(String[] args) {
 		@SuppressWarnings("unused")
 		ToDo toDo = new ToDo();

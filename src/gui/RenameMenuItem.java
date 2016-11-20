@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -13,6 +14,8 @@ public class RenameMenuItem extends JMenuItem implements ActionListener {
 
 	public RenameMenuItem(ToDo todo) {
 		super("Rename file");
+		Font font = new Font("Verdana", Font.ITALIC, 18);
+		super.setFont(font);
 		this.todo = todo;
 		addActionListener(this);
 	}

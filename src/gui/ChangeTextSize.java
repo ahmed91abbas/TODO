@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -11,6 +12,8 @@ public class ChangeTextSize extends JMenuItem implements ActionListener{
 	private ToDo todo;
 	public ChangeTextSize(ToDo todo){
 		super("Change text size");
+		Font font = new Font("Verdana", Font.ITALIC, 18);
+		super.setFont(font);
 		this.todo = todo;
 		addActionListener(this);
 	}

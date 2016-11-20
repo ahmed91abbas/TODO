@@ -60,6 +60,8 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 
 	public PreferencesMenuItem(ToDo todo) {
 		super("Preferences");
+		Font font = new Font("Verdana", Font.ITALIC, 18);
+		super.setFont(font);
 		this.todo = todo;
 		prefs = Preferences.userRoot().node(this.getClass().getName());
 

@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -35,6 +36,8 @@ public class LastOpened extends JMenuItem implements ActionListener {
 		prefs = Preferences.userRoot().node(this.getClass().getName());
 
 		c = new JComboBox<String>();
+		Font font = new Font("Verdana", Font.ITALIC, 16);
+		c.setFont(font);
 		c.addActionListener(this);
 		add(c);
 

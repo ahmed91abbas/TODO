@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -19,6 +20,8 @@ public abstract class FileMenu extends JMenuItem implements ActionListener {
 
 	protected FileMenu(ToDo todo, String title) {
 		super(title);
+		Font font = new Font("Verdana", Font.ITALIC, 18);
+		super.setFont(font);
 		this.todo = todo;
 		addActionListener(this);
 
