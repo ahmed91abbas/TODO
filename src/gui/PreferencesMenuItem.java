@@ -14,6 +14,7 @@ import java.awt.event.KeyEvent;
 import java.util.prefs.Preferences;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -40,6 +41,8 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 	private int textSize = 0;
 	private Color textColor;
 	private Color markingColor;
+	private JComboBox<String> choises;
+	private String textPos;
 	private JTextArea hotkey1TextArea;
 	private JTextArea hotkey2TextArea;
 	private int newKeyCode;
@@ -57,6 +60,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 	final static String C6 = "sbar6";
 	final static String C7 = "newHotkey";
 	final static String C8 = "SaveAndCloseHotkey";
+	final static String C9 = "txtPos";
 
 	public PreferencesMenuItem(ToDo todo) {
 		super("Preferences");
@@ -72,6 +76,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		textSize = prefs.getInt("C0", 25);
 		newKeyCode = prefs.getInt("C7", KeyEvent.VK_N);
 		saveAndCloseKeyCode = prefs.getInt("C8", KeyEvent.VK_Q);
+		textPos = prefs.get("C9", "");
 
 		addActionListener(this);
 	}
@@ -81,6 +86,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		todo.setTextSize(textSize);
 		todo.setHotkeyForNew(newKeyCode);
 		todo.setHotkeyForSaveAndClose(saveAndCloseKeyCode);
+		todo.setNewNotePos(textPos);
 	}
 
 	private void init() {
@@ -121,7 +127,7 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 
 		GridLayout buttonsGrid = new GridLayout(1, 3);
 		buttons.setLayout(buttonsGrid);
-		buttons.setBounds(0, 370, 400, 50);
+		buttons.setBounds(0, 430, 400, 50); 
 		frame.add(buttons);
 
 		hotkey1TextArea = new JTextArea();
@@ -211,11 +217,24 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		markingColorPanel.setBounds(220, 290, 50, 55);
 		markingColorPanel.setBackground(markingColor);
 		frame.getContentPane().add(markingColorPanel);
-
+		
+		JTextArea txtPositionJTA = new JTextArea("Add new notes to the ");
+		txtPositionJTA.setEditable(false);
+		txtPositionJTA.setFont(font);
+		txtPositionJTA.setBackground(getBackground());
+		txtPositionJTA.setBounds(10, 380 , 180 , 25);
+		choises = new JComboBox<String>(new String[]{"beginning of the list", "end of the list"});
+		choises.setSelectedItem(textPos);
+		choises.setFont(font);
+		choises.setBounds(190, 380, 200, 25);
+		choises.addActionListener(new textPosActionListener());
+		frame.add(txtPositionJTA);
+		frame.add(choises);
+		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		frame.setLocation(dim.width / 3 - frame.getSize().width / 3, dim.height
 				/ 6 - frame.getSize().height / 6);
-		frame.setPreferredSize(new Dimension(400, 460));
+		frame.setPreferredSize(new Dimension(400, 530));
 		frame.setResizable(false);
 		frame.pack();
 		frame.setVisible(true);
@@ -279,6 +298,9 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 			hotkey2TextArea.setText("Press Alt + "
 					+ KeyEvent.getKeyText(saveAndCloseKeyCode)
 					+ " to save and close");
+			textPos = "beginning of the list";
+			choises.setSelectedItem(textPos);
+			prefs.put(textPos, "");
 		}
 	}
 
@@ -304,7 +326,9 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 			prefs.putInt("C0", textSize);
 			prefs.putInt("C7", newKeyCode);
 			prefs.putInt("C8", saveAndCloseKeyCode);
-
+			String ComboBoxChoise = (String) choises.getSelectedItem();
+			prefs.put("C9", ComboBoxChoise);
+			
 			textColor = textColorPanel.getBackground();
 			markingColor = markingColorPanel.getBackground();
 			showInGUI();
@@ -324,6 +348,15 @@ public class PreferencesMenuItem extends JMenuItem implements ActionListener,
 		}
 	}
 
+	private class textPosActionListener implements ActionListener{
+		@SuppressWarnings("unchecked")
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			JComboBox<String> source = (JComboBox<String>) e.getSource();
+			textPos = (String) source.getSelectedItem();
+		}
+	}
+	
 	public Color getMarkingColor() {
 		return markingColor;
 	}

@@ -46,6 +46,7 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	private int tempRowIndex, indexMousePressed;
 	private JButton New;
 	private JButton saveAndClose;
+	private boolean addNewNotesAtEnd;
 
 	public ToDo() {
 
@@ -153,10 +154,16 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 		public void actionPerformed(ActionEvent e) {
 			setRowHeight(textSize);
 			String s = JOptionPane.showInputDialog("Enter your note");
+
 			if (s != null) {
-				model.addRow(new Object[] { s });
-				int lastRow = convertRowIndexToView(model.getRowCount() - 1);
-				db.add(lastRow, s);
+				if(addNewNotesAtEnd){
+					model.addRow(new Object[] { s });
+					int lastRow = convertRowIndexToView(model.getRowCount() - 1);
+					db.add(lastRow, s);
+				} else {
+					model.insertRow(0, new Object[] { s });
+					db.add(0,s);
+				}
 				fixTableHightAndWidth();
 			}
 		}
@@ -484,7 +491,15 @@ public class ToDo extends JTable implements MouseListener, MouseMotionListener {
 	public void setHotkeyForSaveAndClose(int keyCode) {
 		saveAndClose.setMnemonic(keyCode);
 	}
-
+	
+	public void setNewNotePos(String textPos) {
+		if(textPos.equals("end of the list")){
+			addNewNotesAtEnd = true;
+		} else {
+			addNewNotesAtEnd = false;
+		}
+	}
+	
 	public static void main(String[] args) {
 		@SuppressWarnings("unused")
 		ToDo toDo = new ToDo();
